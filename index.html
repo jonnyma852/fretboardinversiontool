@@ -57,48 +57,60 @@ header p { font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spac
 .btn.audio-on { border-color: #3cb86a; color: #3cb86a; background: #0e1f14; }
 .btn.audio-on:hover { background: #142a1a; }
 
-/* Play Chord button */
-.btn.play-chord {
-  border-color: var(--accent); color: var(--accent);
-  letter-spacing: 0.05em;
-}
+.btn.play-chord { border-color: var(--accent); color: var(--accent); letter-spacing: 0.05em; }
 .btn.play-chord:hover:not(:disabled) { background: #221f10; }
-.btn.play-chord:disabled {
-  opacity: 0.3; cursor: not-allowed;
-  border-color: var(--border); color: var(--muted);
-}
-.btn.play-chord.strumming {
-  background: #2a2210;
-  border-color: #ffdd88;
-  color: #ffdd88;
-}
+.btn.play-chord:disabled { opacity: 0.3; cursor: not-allowed; border-color: var(--border); color: var(--muted); }
+.btn.play-chord.strumming { background: #2a2210; border-color: #ffdd88; color: #ffdd88; }
 
-/* Volume slider */
 .vol-wrap {
   display: flex; align-items: center; gap: 8px;
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 5px; padding: 5px 10px;
-  transition: border-color 0.15s;
+  border-radius: 5px; padding: 5px 10px; transition: border-color 0.15s;
 }
 .vol-wrap:hover { border-color: var(--accent); }
 .vol-icon { font-size: 0.85rem; line-height: 1; user-select: none; }
 input[type=range].vol-slider {
   -webkit-appearance: none; appearance: none;
-  width: 90px; height: 4px;
-  background: var(--border); border-radius: 2px; outline: none; cursor: pointer;
+  width: 90px; height: 4px; background: var(--border); border-radius: 2px; outline: none; cursor: pointer;
 }
 input[type=range].vol-slider::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--accent); cursor: pointer;
-  transition: transform 0.1s;
+  width: 14px; height: 14px; border-radius: 50%; background: var(--accent); cursor: pointer; transition: transform 0.1s;
 }
 input[type=range].vol-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
 input[type=range].vol-slider::-moz-range-thumb {
-  width: 14px; height: 14px; border-radius: 50%; border: none;
-  background: var(--accent); cursor: pointer;
+  width: 14px; height: 14px; border-radius: 50%; border: none; background: var(--accent); cursor: pointer;
 }
 .vol-pct { font-size: 0.65rem; color: var(--muted); width: 28px; text-align: right; }
+
+/* ── Root override row ─────────────────────────────────────── */
+.root-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center;
+  padding: 8px 14px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  max-width: 640px;
+  transition: opacity 0.2s;
+}
+.root-row-label {
+  font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-right: 2px; white-space: nowrap;
+}
+.root-pill {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px; cursor: pointer; user-select: none;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.root-pill:hover { border-color: var(--accent); color: var(--text); background: #222530; }
+/* Active note in the chord — highlight subtly so you know it's available */
+.root-pill.in-chord { border-color: #555; color: var(--text); }
+/* Currently selected root */
+.root-pill.selected {
+  background: var(--accent); border-color: var(--accent); color: #111;
+}
+/* Auto pill */
+.root-pill.auto-pill { border-style: dashed; }
+.root-pill.auto-pill.selected { background: var(--surface); border-color: var(--accent); color: var(--accent); border-style: solid; }
 
 .status-bar {
   font-size: 0.75rem; color: var(--muted); text-align: center;
@@ -117,7 +129,6 @@ input[type=range].vol-slider::-moz-range-thumb {
 .hint.on { border-color: var(--accent); color: var(--accent); }
 
 .fb-scroll { width: 100%; overflow-x: auto; padding-bottom: 32px; padding-top: 28px; }
-
 @media (max-width: 900px) {
   .fb-scroll { overflow-x: hidden; padding-left: 0; padding-right: 0; }
   .fb-wrap { transform-origin: top left; }
@@ -129,62 +140,29 @@ input[type=range].vol-slider::-moz-range-thumb {
 .fret-num-cell { font-size: 0.58rem; color: var(--muted); text-align: center; flex-shrink: 0; user-select: none; }
 
 .fretboard {
-  background: #ffffff;
-  border: 2px solid #c0c0c0;
-  border-right: none;
-  border-radius: 3px;
-  display: inline-flex;
-  flex-direction: column;
-  position: relative;
-  overflow: visible;
-  margin-top: 12px;
-  margin-bottom: 12px;
-  padding-right: 24px;
+  background: #ffffff; border: 2px solid #c0c0c0; border-right: none; border-radius: 3px;
+  display: inline-flex; flex-direction: column; position: relative; overflow: visible;
+  margin-top: 12px; margin-bottom: 12px; padding-right: 24px;
 }
-.fretboard::before,
-.fretboard::after {
-  content: '';
-  position: absolute;
-  left: -2px; right: -2px;
-  height: 12px;
-  background: #ffffff;
-  border-left: 2px solid #c0c0c0;
-  z-index: 0;
+.fretboard::before, .fretboard::after {
+  content: ''; position: absolute; left: -2px; right: -2px; height: 12px;
+  background: #ffffff; border-left: 2px solid #c0c0c0; z-index: 0;
 }
 .fretboard::before { bottom: 100%; }
 .fretboard::after  { top: 100%; }
 
-.string-row {
-  display: flex; align-items: center;
-  position: relative; height: 46px;
-  overflow: visible;
-}
+.string-row { display: flex; align-items: center; position: relative; height: 46px; overflow: visible; }
 .string-row.top-string .fret-cell::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -6px; right: 100%;
-  height: calc(50% - 1px);
-  background: #fff;
-  z-index: 3;
-  pointer-events: none;
+  content: ''; position: absolute; top: 0; left: -6px; right: 100%;
+  height: calc(50% - 1px); background: #fff; z-index: 3; pointer-events: none;
 }
 .string-row.bottom-string .fret-cell::before {
-  content: '';
-  position: absolute;
-  bottom: 0; left: -6px; right: 100%;
-  height: calc(50% - 1px);
-  background: #fff;
-  z-index: 3;
-  pointer-events: none;
+  content: ''; position: absolute; bottom: 0; left: -6px; right: 100%;
+  height: calc(50% - 1px); background: #fff; z-index: 3; pointer-events: none;
 }
-
 .string-row::after {
-  content: '';
-  position: absolute;
-  left: 40px; right: 0;
-  top: 50%; transform: translateY(-50%);
-  pointer-events: none; z-index: 1;
-  background: rgba(0,0,0,0.22);
+  content: ''; position: absolute; left: 40px; right: 0; top: 50%; transform: translateY(-50%);
+  pointer-events: none; z-index: 1; background: rgba(0,0,0,0.22);
 }
 .string-row[data-s="0"]::after { height: 3px; }
 .string-row[data-s="1"]::after { height: 2.4px; }
@@ -197,49 +175,26 @@ input[type=range].vol-slider::-moz-range-thumb {
   width: 40px; text-align: center; font-size: 0.68rem; font-weight: 700;
   color: #888; flex-shrink: 0; user-select: none; position: relative; z-index: 3;
   background: #fff; cursor: pointer; height: 46px;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.1s;
+  display: flex; align-items: center; justify-content: center; transition: background 0.1s;
 }
 .string-name:hover { background: transparent; }
 .string-name:hover::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.04);
-  z-index: 6;
-  pointer-events: none;
+  content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.04); z-index: 6; pointer-events: none;
 }
 
 .fret-cell {
-  flex-shrink: 0;
-  height: 46px;
-  border-right: 2px solid #aaa;
-  cursor: pointer;
+  flex-shrink: 0; height: 46px; border-right: 2px solid #aaa; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  position: relative; z-index: 2;
-  transition: background 0.1s;
-  overflow: visible;
+  position: relative; z-index: 2; transition: background 0.1s; overflow: visible;
 }
 .fret-cell:hover::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.04);
-  z-index: 6;
-  pointer-events: none;
+  content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.04); z-index: 6; pointer-events: none;
 }
-
 .fret-cell.nut { border-left: 5px solid #777; }
 
 .fret-marker {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.13);
-  pointer-events: none;
-  z-index: 10;
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: 9px; height: 9px; border-radius: 50%; background: rgba(0,0,0,0.13); pointer-events: none; z-index: 10;
 }
 .fret-marker.below       { bottom: 0px; }
 .fret-marker.below.left  { bottom: 0px; left: calc(50% - 8px); }
@@ -255,8 +210,7 @@ input[type=range].vol-slider::-moz-range-thumb {
   width: 30px; height: 30px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.57rem; font-weight: 700; line-height: 1;
-  text-align: center; pointer-events: none;
-  position: relative; z-index: 7; white-space: nowrap;
+  text-align: center; pointer-events: none; position: relative; z-index: 7; white-space: nowrap;
 }
 .dot-g0 { background: var(--g0); border: 2px solid var(--g0b); color: #fff; }
 .dot-g1 { background: var(--g1); border: 2px solid var(--g1b); color: #fff; }
@@ -304,6 +258,12 @@ input[type=range].vol-slider::-moz-range-thumb {
   </div>
 </div>
 
+<!-- Root override row — hidden until 2+ notes placed -->
+<div class="root-row" id="rootRow" style="display:none;">
+  <span class="root-row-label">Root</span>
+  <!-- Pills injected by JS -->
+</div>
+
 <div class="status-bar">
   <span class="name" id="statusName">Click any frets to place your chord shape</span>
   <span class="sub" id="statusSub">One note per string — chord auto-detected live</span>
@@ -337,7 +297,6 @@ input[type=range].vol-slider::-moz-range-thumb {
 </div>
 
 <script>
-// ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const NUM_FRETS = 24;
 const FRET_W = 44;
@@ -382,11 +341,8 @@ const DOUBLE_MARKER_FRETS  = new Set([12, 24]);
 
 function noteAt(s, f) { return (OPEN[s] + f) % 12; }
 
-// ─── AUDIO ENGINE ─────────────────────────────────────────────────────────────
-let audioCtx = null;
-let masterGain = null;
-let audioEnabled = false;
-let currentVolume = 0.70;
+// ─── AUDIO ───────────────────────────────────────────────────────────────────
+let audioCtx = null, masterGain = null, audioEnabled = false, currentVolume = 0.70;
 
 function getAudioCtx() {
   if (!audioCtx) {
@@ -398,111 +354,60 @@ function getAudioCtx() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
+function midiToHz(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
 
-function midiToHz(midi) {
-  return 440 * Math.pow(2, (midi - 69) / 12);
-}
-
-// Core plucked-string synth. startOffset lets us stagger notes for a strum.
 function playNoteAt(s, f, startOffset = 0) {
   if (!audioEnabled) return;
   const ctx = getAudioCtx();
-  const midi = OPEN_MIDI[s] + f;
-  const freq = midiToHz(midi);
+  const freq = midiToHz(OPEN_MIDI[s] + f);
   const now = ctx.currentTime + startOffset;
-
   const env = ctx.createGain();
   env.gain.setValueAtTime(0.001, now);
   env.gain.linearRampToValueAtTime(0.7, now + 0.008);
   env.gain.exponentialRampToValueAtTime(0.3, now + 0.08);
   env.gain.exponentialRampToValueAtTime(0.001, now + 2.2);
   env.connect(masterGain);
-
   const filter = ctx.createBiquadFilter();
   filter.type = 'lowpass';
   filter.frequency.value = 800 + (s / 5) * 3200;
   filter.Q.value = 0.8;
   filter.connect(env);
-
   [-4, 4].forEach(dt => {
     const osc = ctx.createOscillator();
-    osc.type = 'sawtooth';
-    osc.frequency.value = freq;
-    osc.detune.value = dt;
-    osc.connect(filter);
-    osc.start(now);
-    osc.stop(now + 2.5);
+    osc.type = 'sawtooth'; osc.frequency.value = freq; osc.detune.value = dt;
+    osc.connect(filter); osc.start(now); osc.stop(now + 2.5);
   });
-
   const sub = ctx.createOscillator();
-  const subGain = ctx.createGain();
-  subGain.gain.value = 0.25;
-  sub.type = 'sine';
-  sub.frequency.value = freq;
-  sub.connect(subGain);
-  subGain.connect(env);
-  sub.start(now);
-  sub.stop(now + 2.5);
+  const subGain = ctx.createGain(); subGain.gain.value = 0.25;
+  sub.type = 'sine'; sub.frequency.value = freq;
+  sub.connect(subGain); subGain.connect(env); sub.start(now); sub.stop(now + 2.5);
 }
+function playNote(s, f) { playNoteAt(s, f, 0); }
 
-// Original single-note play (on fret click)
-function playNote(s, f) {
-  playNoteAt(s, f, 0);
-}
-
-// ─── PLAY CHORD ───────────────────────────────────────────────────────────────
-// Strums all placed notes from low string to high, with a small stagger between
-// each note to mimic a real downstroke strum (~30ms per string).
 function playChord() {
   const keys = Object.keys(rootShape);
   if (!keys.length || !audioEnabled) return;
-
   const btn = document.getElementById('playChordBtn');
-  btn.classList.add('strumming');
-  btn.textContent = '♪ Playing…';
-
-  // Sort notes by string index ascending (low E → high e = natural strum order)
-  const notes = keys.map(k => {
-    const [s, f] = k.split('-').map(Number);
-    return { s, f };
-  }).sort((a, b) => a.s - b.s);
-
-  const STRUM_INTERVAL = 0.032; // 32ms between each string — realistic downstroke
-  notes.forEach((n, i) => {
-    playNoteAt(n.s, n.f, i * STRUM_INTERVAL);
-  });
-
-  // Reset button after the strum animation (~notes * strum + small buffer)
-  const totalMs = notes.length * STRUM_INTERVAL * 1000 + 300;
-  setTimeout(() => {
-    btn.classList.remove('strumming');
-    btn.textContent = '▶ Play Chord';
-  }, totalMs);
+  btn.classList.add('strumming'); btn.textContent = '♪ Playing…';
+  const notes = keys.map(k => { const [s,f]=k.split('-').map(Number); return{s,f}; }).sort((a,b)=>a.s-b.s);
+  const STRUM = 0.032;
+  notes.forEach((n, i) => playNoteAt(n.s, n.f, i * STRUM));
+  setTimeout(() => { btn.classList.remove('strumming'); btn.textContent = '▶ Play Chord'; }, notes.length * STRUM * 1000 + 300);
 }
 
-// ─── AUDIO TOGGLE ─────────────────────────────────────────────────────────────
 function toggleAudio() {
   audioEnabled = !audioEnabled;
   const btn = document.getElementById('audioToggleBtn');
   const volCtrl = document.getElementById('volCtrl');
   const playBtn = document.getElementById('playChordBtn');
-
   if (audioEnabled) {
-    btn.textContent = '🔊 On';
-    btn.classList.add('audio-on');
-    volCtrl.style.opacity = '1';
-    volCtrl.style.pointerEvents = 'auto';
-    playBtn.disabled = false;
-    getAudioCtx();
+    btn.textContent = '🔊 On'; btn.classList.add('audio-on');
+    volCtrl.style.opacity = '1'; volCtrl.style.pointerEvents = 'auto';
+    playBtn.disabled = false; getAudioCtx();
   } else {
-    btn.textContent = '🔇 Off';
-    btn.classList.remove('audio-on');
-    volCtrl.style.opacity = '0.35';
-    volCtrl.style.pointerEvents = 'none';
-    playBtn.disabled = true;
-    // Reset play button if it was mid-animation
-    playBtn.classList.remove('strumming');
-    playBtn.textContent = '▶ Play Chord';
+    btn.textContent = '🔇 Off'; btn.classList.remove('audio-on');
+    volCtrl.style.opacity = '0.35'; volCtrl.style.pointerEvents = 'none';
+    playBtn.disabled = true; playBtn.classList.remove('strumming'); playBtn.textContent = '▶ Play Chord';
   }
 }
 
@@ -510,63 +415,84 @@ function onVolumeChange(val) {
   currentVolume = val / 100;
   document.getElementById('volPct').textContent = val + '%';
   const pct = val + '%';
-  const slider = document.getElementById('volSlider');
-  slider.style.background = `linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}, var(--border) ${pct}, var(--border) 100%)`;
+  document.getElementById('volSlider').style.background =
+    `linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}, var(--border) ${pct}, var(--border) 100%)`;
   if (masterGain) masterGain.gain.value = currentVolume;
 }
-
 window.addEventListener('load', () => onVolumeChange(70));
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let rootShape  = {};
+let rootShape   = {};
 let displayDots = {};
+let rootOverride = null; // null = auto; 0–11 = forced root PC
+
+// ─── ROOT OVERRIDE UI ────────────────────────────────────────────────────────
+function buildRootRow(chordPCs) {
+  // chordPCs: array of pitch classes currently in play
+  const row = document.getElementById('rootRow');
+  row.innerHTML = '<span class="root-row-label">Root</span>';
+
+  // Auto pill
+  const auto = document.createElement('span');
+  auto.className = 'root-pill auto-pill' + (rootOverride === null ? ' selected' : '');
+  auto.textContent = 'Auto';
+  auto.title = 'Let the tool detect the root automatically';
+  auto.addEventListener('click', () => { rootOverride = null; computeAndDisplay(); });
+  row.appendChild(auto);
+
+  // 12 note pills — notes in the chord are highlighted
+  const inChordSet = new Set(chordPCs);
+  for (let pc = 0; pc < 12; pc++) {
+    const pill = document.createElement('span');
+    pill.className = 'root-pill' +
+      (inChordSet.has(pc) ? ' in-chord' : '') +
+      (rootOverride === pc ? ' selected' : '');
+    pill.textContent = NOTES[pc];
+    pill.title = inChordSet.has(pc) ? `Set ${NOTES[pc]} as root` : `${NOTES[pc]} (not in current chord)`;
+    const capturedPc = pc;
+    pill.addEventListener('click', () => { rootOverride = capturedPc; computeAndDisplay(); });
+    row.appendChild(pill);
+  }
+
+  row.style.display = 'flex';
+}
+
+function hideRootRow() {
+  document.getElementById('rootRow').style.display = 'none';
+}
 
 // ─── BUILD DOM ────────────────────────────────────────────────────────────────
 function build() {
   const nr = document.getElementById('fretNums');
   nr.innerHTML = '';
-  const sp = document.createElement('div');
-  sp.style.cssText = 'width:40px;flex-shrink:0';
-  nr.appendChild(sp);
+  const sp = document.createElement('div'); sp.style.cssText = 'width:40px;flex-shrink:0'; nr.appendChild(sp);
   for (let f = 1; f <= NUM_FRETS; f++) {
     const d = document.createElement('div');
-    d.className = 'fret-num-cell';
-    d.style.width = FRET_W + 'px';
-    d.textContent = f;
-    nr.appendChild(d);
+    d.className = 'fret-num-cell'; d.style.width = FRET_W + 'px'; d.textContent = f; nr.appendChild(d);
   }
 
-  const fb = document.getElementById('fretboard');
-  fb.innerHTML = '';
+  const fb = document.getElementById('fretboard'); fb.innerHTML = '';
   for (let si = 5; si >= 0; si--) {
     const row = document.createElement('div');
-    row.className = 'string-row';
-    row.dataset.s = si;
+    row.className = 'string-row'; row.dataset.s = si;
     if (si === 5) row.classList.add('top-string');
     if (si === 0) row.classList.add('bottom-string');
 
     const nm = document.createElement('div');
-    nm.className = 'string-name';
-    nm.textContent = SNAMES[si];
-    nm.dataset.s = si;
-    nm.addEventListener('click', onOpenStringClick);
-    row.appendChild(nm);
+    nm.className = 'string-name'; nm.textContent = SNAMES[si]; nm.dataset.s = si;
+    nm.addEventListener('click', onOpenStringClick); row.appendChild(nm);
 
     for (let f = 1; f <= NUM_FRETS; f++) {
       const cell = document.createElement('div');
-      cell.className = 'fret-cell';
-      cell.style.width = FRET_W + 'px';
+      cell.className = 'fret-cell'; cell.style.width = FRET_W + 'px';
       if (f === 1) cell.classList.add('nut');
-      cell.dataset.s = si;
-      cell.dataset.f = f;
+      cell.dataset.s = si; cell.dataset.f = f;
       cell.addEventListener('click', onCellClick);
 
       if (si === 5 || si === 3 || si === 0) {
         const pos = si === 5 ? 'above' : si === 3 ? 'middle' : 'below';
         if (SINGLE_MARKER_FRETS.has(f)) {
-          const m = document.createElement('div');
-          m.className = `fret-marker ${pos}`;
-          cell.appendChild(m);
+          const m = document.createElement('div'); m.className = `fret-marker ${pos}`; cell.appendChild(m);
         } else if (DOUBLE_MARKER_FRETS.has(f)) {
           const m1 = document.createElement('div'); m1.className = `fret-marker ${pos} left`;
           const m2 = document.createElement('div'); m2.className = `fret-marker ${pos} right`;
@@ -591,13 +517,9 @@ function onOpenStringClick(e) { toggleNote(+e.currentTarget.dataset.s, 0); }
 
 function toggleNote(s, f) {
   const key = `${s}-${f}`;
-  const isRemoving = !!rootShape[key];
-  if (isRemoving) {
-    delete rootShape[key];
-  } else {
-    for (const k of Object.keys(rootShape)) {
-      if (+k.split('-')[0] === s) delete rootShape[k];
-    }
+  if (rootShape[key]) { delete rootShape[key]; }
+  else {
+    for (const k of Object.keys(rootShape)) { if (+k.split('-')[0] === s) delete rootShape[k]; }
     rootShape[key] = true;
     playNote(s, f);
   }
@@ -605,18 +527,23 @@ function toggleNote(s, f) {
 }
 
 function clearAll() {
-  rootShape = {}; displayDots = {}; render();
+  rootShape = {}; displayDots = {}; rootOverride = null;
+  hideRootRow(); render();
   document.getElementById('statusName').textContent = 'Cleared — place your chord shape';
   document.getElementById('statusSub').textContent = 'Click any frets to start';
   setHint('Click frets to place notes — inversions appear live', false);
 }
 
 // ─── CHORD DETECTION ─────────────────────────────────────────────────────────
-function detectChord(pcs) {
+function detectChord(pcs, forcedRoot = null) {
   const pcSet = [...new Set(pcs)];
   const n = pcSet.length;
+
+  // If a root is forced, only try that root
+  const rootsToTry = forcedRoot !== null ? [forcedRoot] : Array.from({length:12}, (_,i) => i);
+
   let bestMatch = null, bestScore = -1;
-  for (let r = 0; r < 12; r++) {
+  for (const r of rootsToTry) {
     const intervals = pcSet.map(pc => ((pc - r) + 12) % 12).sort((a,b) => a-b);
     for (const template of CHORD_LIBRARY) {
       const tSet = new Set(template.ivs);
@@ -627,8 +554,10 @@ function detectChord(pcs) {
       if (score > bestScore) { bestScore = score; bestMatch = { root: r, template }; }
     }
   }
+
   if (!bestMatch) {
-    const root = pcSet[0];
+    // No template match — use the forced root if set, else first note
+    const root = forcedRoot !== null ? forcedRoot : pcSet[0];
     return { root, name: pcSet.map(p => NOTES[p]).join('/'), labelFor: (pc) => genericLabel(((pc-root)+12)%12) };
   }
   const { root, template } = bestMatch;
@@ -638,31 +567,41 @@ function detectChord(pcs) {
 // ─── COMPUTE & DISPLAY ───────────────────────────────────────────────────────
 function computeAndDisplay() {
   const keys = Object.keys(rootShape);
+
   if (keys.length === 0) {
-    displayDots = {}; render();
+    displayDots = {}; render(); hideRootRow();
     document.getElementById('statusName').textContent = 'Click frets to place your chord shape';
     document.getElementById('statusSub').textContent = 'One note per string — inversions appear live';
     setHint('Click any fret to start — the chord is auto-detected from your notes', false);
     return;
   }
+
   displayDots = {};
   for (const k of keys) {
     const [ss,ff] = k.split('-').map(Number);
     displayDots[k] = { group: 0, label: NOTES[noteAt(ss,ff)] };
   }
   render();
+
   if (keys.length === 1) {
     const [ss,ff] = keys[0].split('-').map(Number);
     document.getElementById('statusName').textContent = NOTES[noteAt(ss,ff)];
     document.getElementById('statusSub').textContent = 'Add more notes — chord detected once 2+ notes placed';
     setHint('Keep placing notes...', false);
+    hideRootRow();
     return;
   }
+
   const playedPCs = [...new Set(keys.map(k => { const [s,f]=k.split('-').map(Number); return noteAt(s,f); }))];
-  const { root, name, labelFor } = detectChord(playedPCs);
+
+  // Show root row — always refresh it so in-chord highlights stay current
+  buildRootRow(playedPCs);
+
+  const { root, name, labelFor } = detectChord(playedPCs, rootOverride);
   const searchPCs = playedPCs;
   const usedStrings = [...new Set(keys.map(k => +k.split('-')[0]))].sort((a,b) => a-b);
   const numStrings = usedStrings.length;
+
   const optsByString = {};
   for (const s of usedStrings) {
     optsByString[s] = [];
@@ -671,6 +610,7 @@ function computeAndDisplay() {
       if (searchPCs.includes(pc)) optsByString[s].push({ f, pc, label: labelFor(pc) });
     }
   }
+
   const allVoicings = [];
   function recurse(idx, chosen) {
     if (idx === numStrings) {
@@ -681,15 +621,18 @@ function computeAndDisplay() {
     for (const opt of optsByString[usedStrings[idx]]) recurse(idx+1, [...chosen,{s:usedStrings[idx],...opt}]);
   }
   recurse(0,[]);
+
   const seen = new Set(), unique = [];
   for (const v of allVoicings) {
     const sig = v.map(n=>`${n.s}:${n.f}`).sort().join('|');
     if (!seen.has(sig)) { seen.add(sig); unique.push(v); }
   }
   unique.sort((a,b) => Math.min(...a.map(n=>n.f)) - Math.min(...b.map(n=>n.f)));
+
   const rootSig = keys.map(k=>{const[s,f]=k.split('-').map(Number);return`${s}:${f}`;}).sort().join('|');
   let rootIdx = unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
   if (rootIdx < 0) rootIdx = 0;
+
   const ordered = [...unique.slice(rootIdx), ...unique.slice(0, rootIdx)];
   const selectedVoicings = [], occupiedCells = new Set();
   for (const voicing of ordered) {
@@ -699,13 +642,23 @@ function computeAndDisplay() {
       cells.forEach(c=>occupiedCells.add(c));
     }
   }
+
   displayDots = {};
   for (const { voicing, group } of selectedVoicings)
     for (const n of voicing) displayDots[`${n.s}-${n.f}`] = { group, label: n.label };
+
   const rootName = NOTES[root];
-  document.getElementById('statusName').textContent = `${rootName} ${name}`;
-  document.getElementById('statusSub').textContent = `Strings: ${usedStrings.map(s=>SNAMES[s]).join(' ')} · ${unique.length} voicings · ${selectedVoicings.length} shown`;
-  setHint(`✓ Auto-detected: ${rootName} ${name} — ${selectedVoicings.length} inversions across full neck`, true);
+  const overrideTag = rootOverride !== null ? ' ✎' : '';
+  document.getElementById('statusName').textContent = `${rootName} ${name}${overrideTag}`;
+  document.getElementById('statusSub').textContent =
+    `Strings: ${usedStrings.map(s=>SNAMES[s]).join(' ')} · ${unique.length} voicings · ${selectedVoicings.length} shown` +
+    (rootOverride !== null ? ` · root locked to ${NOTES[rootOverride]}` : '');
+  setHint(
+    rootOverride !== null
+      ? `✎ Root locked to ${rootName} — click Auto to release`
+      : `✓ Auto-detected: ${rootName} ${name} — ${selectedVoicings.length} inversions across full neck`,
+    true
+  );
   render();
 }
 
@@ -717,16 +670,12 @@ function render() {
     const [s,f] = key.split('-').map(Number);
     const { group, label } = displayDots[key];
     if (f === 0) {
-      const nm = document.querySelector(`.string-name[data-s="${s}"]`);
-      if (!nm) continue;
-      const dot = document.createElement('div');
-      dot.className = `dot dot-g${group}`; dot.textContent = label;
+      const nm = document.querySelector(`.string-name[data-s="${s}"]`); if (!nm) continue;
+      const dot = document.createElement('div'); dot.className = `dot dot-g${group}`; dot.textContent = label;
       nm.textContent = ''; nm.appendChild(dot);
     } else {
-      const cell = document.querySelector(`.fret-cell[data-s="${s}"][data-f="${f}"]`);
-      if (!cell) continue;
-      const dot = document.createElement('div');
-      dot.className = `dot dot-g${group}`; dot.textContent = label;
+      const cell = document.querySelector(`.fret-cell[data-s="${s}"][data-f="${f}"]`); if (!cell) continue;
+      const dot = document.createElement('div'); dot.className = `dot dot-g${group}`; dot.textContent = label;
       cell.appendChild(dot);
     }
   }
@@ -737,8 +686,7 @@ function render() {
 
 function setHint(msg, on) {
   const h = document.getElementById('hint');
-  h.textContent = msg;
-  h.className = 'hint' + (on ? ' on' : '');
+  h.textContent = msg; h.className = 'hint' + (on ? ' on' : '');
 }
 
 // ─── MOBILE SCALING ──────────────────────────────────────────────────────────
