@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fretboard · Inversion Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #111317;
+  --surface: #1c1e24;
+  --border: #2e3038;
+  --text: #e2e4ec;
+  --muted: #666a7a;
+  --accent: #e8b84b;
+  --g0: #222; --g0b: #888;
+  --g1: #3b8ff5; --g1b: #6aadff;
+  --g2: #e8437a; --g2b: #ff7aaa;
+  --g3: #3cb86a; --g3b: #70e098;
+  --g4: #e8952a; --g4b: #ffbc5a;
+  --g5: #a855f7; --g5b: #cc88ff;
+  --g6: #26c9c9; --g6b: #5aeaea;
+  --g7: #e8e84b; --g7b: #ffff88;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 16px 60px;
+  gap: 18px;
+}
+
+header { text-align: center; }
+header h1 { font-size: 1rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+header p { font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.05em; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: center; }
+.ctrl { display: flex; flex-direction: column; gap: 4px; }
+
+.btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 6px 14px; border-radius: 5px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+}
+.btn:hover { border-color: var(--accent); background: #222530; }
+.btn.red { border-color: #e84361; color: #e84361; }
+.btn.red:hover { background: #1e1018; }
+
+.status-bar {
+  font-size: 0.75rem; color: var(--muted); text-align: center;
+  line-height: 1.7; padding: 10px 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; min-width: 340px; max-width: 640px;
+}
+.status-bar .name { font-size: 0.9rem; color: var(--accent); font-weight: 700; display: block; }
+.status-bar .sub { font-size: 0.65rem; color: var(--muted); }
+
+.hint {
+  font-size: 0.65rem; color: var(--muted);
+  border: 1px dashed var(--border); border-radius: 5px;
+  padding: 6px 14px; text-align: center; transition: border-color 0.2s, color 0.2s;
+}
+.hint.on { border-color: var(--accent); color: var(--accent); }
+
+.fb-scroll { width: 100%; overflow-x: auto; padding-bottom: 32px; padding-top: 28px; }
+
+@media (max-width: 900px) {
+  .fb-scroll { overflow-x: hidden; padding-left: 0; padding-right: 0; }
+  .fb-wrap { transform-origin: top left; }
+}
+.fb-wrap { display: inline-flex; flex-direction: column; }
+.fb-scroll { text-align: center; }
+
+.fret-nums-row { display: flex; margin-left: 1px; margin-bottom: 5px; }
+.fret-num-cell { font-size: 0.58rem; color: var(--muted); text-align: center; flex-shrink: 0; user-select: none; }
+
+.fretboard {
+  background: #ffffff;
+  border: 2px solid #c0c0c0;
+  border-right: none;
+  border-radius: 3px;
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+  overflow: visible;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding-right: 24px;
+}
+.fretboard::before,
+.fretboard::after {
+  content: '';
+  position: absolute;
+  left: -2px; right: -2px;
+  height: 12px;
+  background: #ffffff;
+  border-left: 2px solid #c0c0c0;
+  z-index: 0;
+}
+.fretboard::before { bottom: 100%; }
+.fretboard::after  { top: 100%; }
+
+.string-row {
+  display: flex; align-items: center;
+  position: relative; height: 46px;
+  overflow: visible;
+}
+.string-row.top-string .fret-cell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -6px; right: 100%;
+  height: calc(50% - 1px);
+  background: #fff;
+  z-index: 3;
+  pointer-events: none;
+}
+.string-row.bottom-string .fret-cell::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: -6px; right: 100%;
+  height: calc(50% - 1px);
+  background: #fff;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.string-row::after {
+  content: '';
+  position: absolute;
+  left: 40px; right: 0;
+  top: 50%; transform: translateY(-50%);
+  pointer-events: none; z-index: 1;
+  background: rgba(0,0,0,0.22);
+}
+.string-row[data-s="0"]::after { height: 3px; }
+.string-row[data-s="1"]::after { height: 2.4px; }
+.string-row[data-s="2"]::after { height: 1.9px; }
+.string-row[data-s="3"]::after { height: 1.5px; }
+.string-row[data-s="4"]::after { height: 1.1px; }
+.string-row[data-s="5"]::after { height: 0.8px; }
+
+.string-name {
+  width: 40px; text-align: center; font-size: 0.68rem; font-weight: 700;
+  color: #888; flex-shrink: 0; user-select: none; position: relative; z-index: 3;
+  background: #fff; cursor: pointer; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s;
+}
+.string-name:hover { background: transparent; }
+.string-name:hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.04);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.fret-cell {
+  flex-shrink: 0;
+  height: 46px;
+  border-right: 2px solid #aaa;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+  transition: background 0.1s;
+  overflow: visible;
+}
+.fret-cell:hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.04);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.fret-cell.nut { border-left: 5px solid #777; }
+
+.fret-marker {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.13);
+  pointer-events: none;
+  z-index: 10;
+}
+.fret-marker.below       { bottom: 0px; }
+.fret-marker.below.left  { bottom: 0px; left: calc(50% - 8px); }
+.fret-marker.below.right { bottom: 0px; left: calc(50% + 8px); }
+.fret-marker.above       { top: 0px; }
+.fret-marker.above.left  { top: 0px; left: calc(50% - 8px); }
+.fret-marker.above.right { top: 0px; left: calc(50% + 8px); }
+.fret-marker.middle       { top: calc(100% - 3px); bottom: auto; }
+.fret-marker.middle.left  { top: calc(100% - 3px); bottom: auto; left: calc(50% - 8px); }
+.fret-marker.middle.right { top: calc(100% - 3px); bottom: auto; left: calc(50% + 8px); }
+
+.dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.57rem; font-weight: 700; line-height: 1;
+  text-align: center; pointer-events: none;
+  position: relative; z-index: 7; white-space: nowrap;
+}
+.dot-g0 { background: var(--g0); border: 2px solid var(--g0b); color: #fff; }
+.dot-g1 { background: var(--g1); border: 2px solid var(--g1b); color: #fff; }
+.dot-g2 { background: var(--g2); border: 2px solid var(--g2b); color: #fff; }
+.dot-g3 { background: var(--g3); border: 2px solid var(--g3b); color: #fff; }
+.dot-g4 { background: var(--g4); border: 2px solid var(--g4b); color: #111; }
+.dot-g5 { background: var(--g5); border: 2px solid var(--g5b); color: #fff; }
+.dot-g6 { background: var(--g6); border: 2px solid var(--g6b); color: #111; }
+.dot-g7 { background: var(--g7); border: 2px solid var(--g7b); color: #111; }
+
+.legend { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: var(--muted); }
+.legend-sw { width: 14px; height: 14px; border-radius: 50%; }
+
+.interval-key { font-size: 0.62rem; color: var(--muted); text-align: center; line-height: 2; max-width: 660px; }
+.interval-key b { color: #9ab4e8; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎸 Fretboard · Inversion Tool</h1>
+  <p>Click frets to place your chord shape · then find all inversions up the neck on those same strings</p>
+</header>
+
+<div class="toolbar">
+  <div class="ctrl">
+    <button class="btn red" onclick="clearAll()">&#10005; Clear All</button>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="name" id="statusName">Click any frets to place your chord shape</span>
+  <span class="sub" id="statusSub">One note per string — chord auto-detected live</span>
+</div>
+
+<div class="hint" id="hint">Click frets to place your chord shape — inversions appear live as you select notes</div>
+
+<div class="fb-scroll">
+  <div class="fb-wrap">
+    <div class="fret-nums-row" id="fretNums"></div>
+    <div class="fretboard" id="fretboard"></div>
+  </div>
+</div>
+
+<div class="legend" id="legend">
+  <div class="legend-item"><div class="legend-sw" style="background:#222;border:2px solid #888"></div>Your shape</div>
+  <div class="legend-item"><div class="legend-sw" style="background:var(--g1)"></div>Inv 1</div>
+  <div class="legend-item"><div class="legend-sw" style="background:var(--g2)"></div>Inv 2</div>
+  <div class="legend-item"><div class="legend-sw" style="background:var(--g3)"></div>Inv 3</div>
+  <div class="legend-item"><div class="legend-sw" style="background:var(--g4)"></div>Inv 4</div>
+  <div class="legend-item"><div class="legend-sw" style="background:var(--g5)"></div>Inv 5</div>
+  <div class="legend-item"><div class="legend-sw" style="background:var(--g6)"></div>Inv 6</div>
+  <div class="legend-item"><div class="legend-sw" style="background:var(--g7)"></div>Inv 7</div>
+</div>
+
+<div class="interval-key">
+  <b>R</b>=Root &nbsp;·&nbsp; <b>△3</b>=Maj 3rd &nbsp;·&nbsp; <b>m3</b>=Min 3rd &nbsp;·&nbsp;
+  <b>p5</b>=Perf 5th &nbsp;·&nbsp; <b>b5</b>=Flat 5th &nbsp;·&nbsp; <b>#5</b>=Aug 5th &nbsp;·&nbsp;
+  <b>△7</b>=Maj 7th &nbsp;·&nbsp; <b>m7</b>=Min 7th &nbsp;·&nbsp; <b>°7</b>=Dim 7th &nbsp;·&nbsp;
+  <b>6</b>=Maj 6th &nbsp;·&nbsp; <b>2/9</b>=2nd/9th &nbsp;·&nbsp; <b>4</b>=Perf 4th
+</div>
+
+<script>
+const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const NUM_FRETS = 24;
+const FRET_W = 44;
+const OPEN = [4, 9, 2, 7, 11, 4];
+const SNAMES = ['E','A','D','G','B','e'];
+
+const CHORD_LIBRARY = [
+  { ivs:[0,4,7],    name:'Major',         lb:{0:'R',4:'△3',7:'p5'} },
+  { ivs:[0,3,7],    name:'Minor',         lb:{0:'R',3:'m3',7:'p5'} },
+  { ivs:[0,4,8],    name:'Augmented',     lb:{0:'R',4:'△3',8:'#5'} },
+  { ivs:[0,3,6],    name:'Diminished',    lb:{0:'R',3:'m3',6:'b5'} },
+  { ivs:[0,2,7],    name:'Sus2',          lb:{0:'R',2:'2',7:'p5'} },
+  { ivs:[0,5,7],    name:'Sus4',          lb:{0:'R',5:'4',7:'p5'} },
+  { ivs:[0,4,7,11], name:'Major 7',       lb:{0:'R',4:'△3',7:'p5',11:'△7'} },
+  { ivs:[0,3,7,10], name:'Minor 7',       lb:{0:'R',3:'m3',7:'p5',10:'m7'} },
+  { ivs:[0,4,7,10], name:'Dom 7',         lb:{0:'R',4:'△3',7:'p5',10:'m7'} },
+  { ivs:[0,3,6,9],  name:'Dim 7',         lb:{0:'R',3:'m3',6:'b5',9:'°7'} },
+  { ivs:[0,3,6,10], name:'Half-Dim ø7',   lb:{0:'R',3:'m3',6:'b5',10:'m7'} },
+  { ivs:[0,4,8,10], name:'Aug 7',         lb:{0:'R',4:'△3',8:'#5',10:'m7'} },
+  { ivs:[0,4,8,11], name:'Aug Maj7',      lb:{0:'R',4:'△3',8:'#5',11:'△7'} },
+  { ivs:[0,3,7,11], name:'Min Maj7',      lb:{0:'R',3:'m3',7:'p5',11:'△7'} },
+  { ivs:[0,2,7,10], name:'Sus2 7',        lb:{0:'R',2:'2',7:'p5',10:'m7'} },
+  { ivs:[0,5,7,10], name:'Sus4 7',        lb:{0:'R',5:'4',7:'p5',10:'m7'} },
+  { ivs:[0,4,7,9],  name:'Major 6',       lb:{0:'R',4:'△3',7:'p5',9:'6'} },
+  { ivs:[0,3,7,9],  name:'Minor 6',       lb:{0:'R',3:'m3',7:'p5',9:'6'} },
+  { ivs:[0,4,7,11,2], name:'Major 9',     lb:{0:'R',4:'△3',7:'p5',11:'△7',2:'9'} },
+  { ivs:[0,3,7,10,2], name:'Minor 9',     lb:{0:'R',3:'m3',7:'p5',10:'m7',2:'9'} },
+  { ivs:[0,4,7,10,2], name:'Dom 9',       lb:{0:'R',4:'△3',7:'p5',10:'m7',2:'9'} },
+  { ivs:[0,4,7,11,5], name:'Major 11',    lb:{0:'R',4:'△3',7:'p5',11:'△7',5:'11'} },
+  { ivs:[0,4,7,2],  name:'Add9',          lb:{0:'R',2:'9',4:'△3',7:'p5'} },
+  { ivs:[0,3,7,2],  name:'Min Add9',      lb:{0:'R',2:'9',3:'m3',7:'p5'} },
+];
+
+function genericLabel(interval) {
+  const map = {0:'R',1:'b2',2:'2',3:'m3',4:'△3',5:'4',6:'b5',7:'p5',8:'#5',9:'6',10:'m7',11:'△7'};
+  return map[interval] || interval.toString();
+}
+
+const SINGLE_MARKER_FRETS = new Set([3, 5, 7, 9, 15, 17, 19, 21]);
+const DOUBLE_MARKER_FRETS  = new Set([12, 24]);
+
+function noteAt(s, f) { return (OPEN[s] + f) % 12; }
+
+let rootShape  = {};
+let displayDots = {};
+
+function build() {
+  const nr = document.getElementById('fretNums');
+  nr.innerHTML = '';
+  const sp = document.createElement('div');
+  sp.style.cssText = 'width:40px;flex-shrink:0';
+  nr.appendChild(sp);
+  for (let f = 1; f <= NUM_FRETS; f++) {
+    const d = document.createElement('div');
+    d.className = 'fret-num-cell';
+    d.style.width = FRET_W + 'px';
+    d.textContent = f;
+    nr.appendChild(d);
+  }
+
+  const fb = document.getElementById('fretboard');
+  fb.innerHTML = '';
+  for (let si = 5; si >= 0; si--) {
+    const row = document.createElement('div');
+    row.className = 'string-row';
+    row.dataset.s = si;
+    if (si === 5) row.classList.add('top-string');
+    if (si === 0) row.classList.add('bottom-string');
+
+    const nm = document.createElement('div');
+    nm.className = 'string-name';
+    nm.textContent = SNAMES[si];
+    nm.dataset.s = si;
+    nm.addEventListener('click', onOpenStringClick);
+    row.appendChild(nm);
+
+    for (let f = 1; f <= NUM_FRETS; f++) {
+      const cell = document.createElement('div');
+      cell.className = 'fret-cell';
+      cell.style.width = FRET_W + 'px';
+      if (f === 1) cell.classList.add('nut');
+      cell.dataset.s = si;
+      cell.dataset.f = f;
+      cell.addEventListener('click', onCellClick);
+
+      if (si === 5 || si === 3 || si === 0) {
+        const pos = si === 5 ? 'above' : si === 3 ? 'middle' : 'below';
+        if (SINGLE_MARKER_FRETS.has(f)) {
+          const m = document.createElement('div');
+          m.className = `fret-marker ${pos}`;
+          cell.appendChild(m);
+        } else if (DOUBLE_MARKER_FRETS.has(f)) {
+          const m1 = document.createElement('div'); m1.className = `fret-marker ${pos} left`;
+          const m2 = document.createElement('div'); m2.className = `fret-marker ${pos} right`;
+          cell.appendChild(m1); cell.appendChild(m2);
+        }
+      }
+      row.appendChild(cell);
+    }
+    if (si === 5 || si === 0) {
+      const mask = document.createElement('div');
+      mask.style.cssText = 'position:absolute;width:4px;background:#fff;z-index:3;pointer-events:none;right:-2px;' +
+        (si === 5 ? 'top:0;height:50%' : 'bottom:0;height:50%') + ';';
+      row.appendChild(mask);
+    }
+    fb.appendChild(row);
+  }
+}
+
+function onCellClick(e) { toggleNote(+e.currentTarget.dataset.s, +e.currentTarget.dataset.f); }
+function onOpenStringClick(e) { toggleNote(+e.currentTarget.dataset.s, 0); }
+
+function toggleNote(s, f) {
+  const key = `${s}-${f}`;
+  if (rootShape[key]) {
+    delete rootShape[key];
+  } else {
+    for (const k of Object.keys(rootShape)) {
+      if (+k.split('-')[0] === s) delete rootShape[k];
+    }
+    rootShape[key] = true;
+  }
+  computeAndDisplay();
+}
+
+function clearAll() {
+  rootShape = {}; displayDots = {}; render();
+  document.getElementById('statusName').textContent = 'Cleared — place your chord shape';
+  document.getElementById('statusSub').textContent = 'Click any frets to start';
+  setHint('Click frets to place notes — inversions appear live', false);
+}
+
+function detectChord(pcs) {
+  const pcSet = [...new Set(pcs)];
+  const n = pcSet.length;
+  let bestMatch = null, bestScore = -1;
+  for (let r = 0; r < 12; r++) {
+    const intervals = pcSet.map(pc => ((pc - r) + 12) % 12).sort((a,b) => a-b);
+    for (const template of CHORD_LIBRARY) {
+      const tSet = new Set(template.ivs);
+      const iSet = new Set(intervals);
+      if (!intervals.every(i => tSet.has(i))) continue;
+      const covered = template.ivs.filter(i => iSet.has(i)).length;
+      const score = covered + (template.ivs.length === n ? 10 : 0);
+      if (score > bestScore) { bestScore = score; bestMatch = { root: r, template }; }
+    }
+  }
+  if (!bestMatch) {
+    const root = pcSet[0];
+    return { root, name: pcSet.map(p => NOTES[p]).join('/'), labelFor: (pc) => genericLabel(((pc-root)+12)%12) };
+  }
+  const { root, template } = bestMatch;
+  return { root, name: template.name, labelFor: (pc) => { const iv=((pc-root)+12)%12; return template.lb[iv]||genericLabel(iv); } };
+}
+
+function computeAndDisplay() {
+  const keys = Object.keys(rootShape);
+  if (keys.length === 0) {
+    displayDots = {}; render();
+    document.getElementById('statusName').textContent = 'Click frets to place your chord shape';
+    document.getElementById('statusSub').textContent = 'One note per string — inversions appear live';
+    setHint('Click any fret to start — the chord is auto-detected from your notes', false);
+    return;
+  }
+  displayDots = {};
+  for (const k of keys) {
+    const [ss,ff] = k.split('-').map(Number);
+    displayDots[k] = { group: 0, label: NOTES[noteAt(ss,ff)] };
+  }
+  render();
+  if (keys.length === 1) {
+    const [ss,ff] = keys[0].split('-').map(Number);
+    document.getElementById('statusName').textContent = NOTES[noteAt(ss,ff)];
+    document.getElementById('statusSub').textContent = 'Add more notes — chord detected once 2+ notes placed';
+    setHint('Keep placing notes...', false);
+    return;
+  }
+  const playedPCs = [...new Set(keys.map(k => { const [s,f]=k.split('-').map(Number); return noteAt(s,f); }))];
+  const { root, name, labelFor } = detectChord(playedPCs);
+  const searchPCs = playedPCs;
+  const usedStrings = [...new Set(keys.map(k => +k.split('-')[0]))].sort((a,b) => a-b);
+  const numStrings = usedStrings.length;
+  const optsByString = {};
+  for (const s of usedStrings) {
+    optsByString[s] = [];
+    for (let f = 0; f <= NUM_FRETS; f++) {
+      const pc = noteAt(s,f);
+      if (searchPCs.includes(pc)) optsByString[s].push({ f, pc, label: labelFor(pc) });
+    }
+  }
+  const allVoicings = [];
+  function recurse(idx, chosen) {
+    if (idx === numStrings) {
+      const covered = new Set(chosen.map(c=>c.pc));
+      if (searchPCs.every(pc=>covered.has(pc))) allVoicings.push([...chosen]);
+      return;
+    }
+    for (const opt of optsByString[usedStrings[idx]]) recurse(idx+1, [...chosen,{s:usedStrings[idx],...opt}]);
+  }
+  recurse(0,[]);
+  const seen = new Set(), unique = [];
+  for (const v of allVoicings) {
+    const sig = v.map(n=>`${n.s}:${n.f}`).sort().join('|');
+    if (!seen.has(sig)) { seen.add(sig); unique.push(v); }
+  }
+  unique.sort((a,b) => Math.min(...a.map(n=>n.f)) - Math.min(...b.map(n=>n.f)));
+  const rootSig = keys.map(k=>{const[s,f]=k.split('-').map(Number);return`${s}:${f}`;}).sort().join('|');
+  let rootIdx = unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
+  if (rootIdx < 0) rootIdx = 0;
+  const ordered = [...unique.slice(rootIdx), ...unique.slice(0, rootIdx)];
+  const selectedVoicings = [], occupiedCells = new Set();
+  for (const voicing of ordered) {
+    const cells = voicing.map(n=>`${n.s}-${n.f}`);
+    if (cells.every(c=>!occupiedCells.has(c))) {
+      selectedVoicings.push({ voicing, group: selectedVoicings.length % 8 });
+      cells.forEach(c=>occupiedCells.add(c));
+    }
+  }
+  displayDots = {};
+  for (const { voicing, group } of selectedVoicings)
+    for (const n of voicing) displayDots[`${n.s}-${n.f}`] = { group, label: n.label };
+  const rootName = NOTES[root];
+  document.getElementById('statusName').textContent = `${rootName} ${name}`;
+  document.getElementById('statusSub').textContent = `Strings: ${usedStrings.map(s=>SNAMES[s]).join(' ')} · ${unique.length} voicings · ${selectedVoicings.length} shown`;
+  setHint(`✓ Auto-detected: ${rootName} ${name} — ${selectedVoicings.length} inversions across full neck`, true);
+  render();
+}
+
+function render() {
+  document.querySelectorAll('.dot').forEach(d=>d.remove());
+  document.querySelectorAll('.string-name').forEach(nm=>{nm.style.color='';nm.style.fontWeight='';});
+  for (const key in displayDots) {
+    const [s,f] = key.split('-').map(Number);
+    const { group, label } = displayDots[key];
+    if (f === 0) {
+      const nm = document.querySelector(`.string-name[data-s="${s}"]`);
+      if (!nm) continue;
+      const dot = document.createElement('div');
+      dot.className = `dot dot-g${group}`; dot.textContent = label;
+      nm.textContent = ''; nm.appendChild(dot);
+    } else {
+      const cell = document.querySelector(`.fret-cell[data-s="${s}"][data-f="${f}"]`);
+      if (!cell) continue;
+      const dot = document.createElement('div');
+      dot.className = `dot dot-g${group}`; dot.textContent = label;
+      cell.appendChild(dot);
+    }
+  }
+  document.querySelectorAll('.string-name').forEach(nm => {
+    if (!nm.querySelector('.dot')) nm.textContent = SNAMES[+nm.dataset.s];
+  });
+}
+
+function setHint(msg, on) {
+  const h = document.getElementById('hint');
+  h.textContent = msg;
+  h.className = 'hint' + (on ? ' on' : '');
+}
+
+function scaleFretboard() {
+  const wrap = document.querySelector('.fb-wrap');
+  const scroll = document.querySelector('.fb-scroll');
+  if (!wrap || !scroll) return;
+  wrap.style.transform = ''; wrap.style.width = '';
+  const naturalW = wrap.scrollWidth, availableW = scroll.clientWidth;
+  if (availableW < naturalW) {
+    const scale = availableW / naturalW;
+    wrap.style.transform = `scale(${scale})`;
+    wrap.style.transformOrigin = 'top left';
+    wrap.style.marginBottom = `-${wrap.scrollHeight * (1 - scale)}px`;
+  }
+}
+window.addEventListener('resize', scaleFretboard);
+setTimeout(scaleFretboard, 50);
+
+build();
+computeAndDisplay();
+scaleFretboard();
+</script>
+</body>
+</html>
