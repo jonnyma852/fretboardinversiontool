@@ -43,6 +43,7 @@ header p { font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spac
 
 .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: center; }
 .ctrl { display: flex; flex-direction: column; gap: 4px; }
+.ctrl-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
 .btn {
   background: var(--surface); border: 1px solid var(--border);
@@ -53,6 +54,35 @@ header p { font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spac
 .btn:hover { border-color: var(--accent); background: #222530; }
 .btn.red { border-color: #e84361; color: #e84361; }
 .btn.red:hover { background: #1e1018; }
+.btn.audio-on { border-color: #3cb86a; color: #3cb86a; background: #0e1f14; }
+.btn.audio-on:hover { background: #142a1a; }
+
+/* Volume slider */
+.vol-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 5px; padding: 5px 10px;
+  transition: border-color 0.15s;
+}
+.vol-wrap:hover { border-color: var(--accent); }
+.vol-icon { font-size: 0.85rem; line-height: 1; user-select: none; }
+input[type=range].vol-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 90px; height: 4px;
+  background: var(--border); border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range].vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+  transition: transform 0.1s;
+}
+input[type=range].vol-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type=range].vol-slider::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%; border: none;
+  background: var(--accent); cursor: pointer;
+}
+.vol-pct { font-size: 0.65rem; color: var(--muted); width: 28px; text-align: right; }
 
 .status-bar {
   font-size: 0.75rem; color: var(--muted); text-align: center;
@@ -240,6 +270,18 @@ header p { font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spac
   <div class="ctrl">
     <button class="btn red" onclick="clearAll()">&#10005; Clear All</button>
   </div>
+  <div class="ctrl">
+    <span class="ctrl-label">Note Audio</span>
+    <button class="btn" id="audioToggleBtn" onclick="toggleAudio()">🔇 Off</button>
+  </div>
+  <div class="ctrl" id="volCtrl" style="opacity:0.35;pointer-events:none;transition:opacity 0.2s;">
+    <span class="ctrl-label">Volume</span>
+    <div class="vol-wrap">
+      <span class="vol-icon">🔈</span>
+      <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="70" oninput="onVolumeChange(this.value)">
+      <span class="vol-pct" id="volPct">70%</span>
+    </div>
+  </div>
 </div>
 
 <div class="status-bar">
@@ -275,11 +317,16 @@ header p { font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spac
 </div>
 
 <script>
+// ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const NUM_FRETS = 24;
 const FRET_W = 44;
-const OPEN = [4, 9, 2, 7, 11, 4];
+const OPEN = [4, 9, 2, 7, 11, 4]; // E A D G B e (semitones mod 12)
 const SNAMES = ['E','A','D','G','B','e'];
+
+// MIDI note numbers for each open string (standard tuning)
+// Low E2=40, A2=45, D3=50, G3=55, B3=59, High e4=64
+const OPEN_MIDI = [40, 45, 50, 55, 59, 64];
 
 const CHORD_LIBRARY = [
   { ivs:[0,4,7],    name:'Major',         lb:{0:'R',4:'△3',7:'p5'} },
@@ -318,9 +365,117 @@ const DOUBLE_MARKER_FRETS  = new Set([12, 24]);
 
 function noteAt(s, f) { return (OPEN[s] + f) % 12; }
 
+// ─── AUDIO ENGINE ─────────────────────────────────────────────────────────────
+// Synthesizes a plucked guitar-like tone using Web Audio API:
+// Multiple detuned sawtooth oscillators → band-pass filter → gain envelope → master gain
+let audioCtx = null;
+let masterGain = null;
+let audioEnabled = false;
+let currentVolume = 0.70; // 0..1
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = currentVolume;
+    masterGain.connect(audioCtx.destination);
+  }
+  // Resume if suspended (browser autoplay policy)
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// Convert MIDI note number to Hz
+function midiToHz(midi) {
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+// Play a plucked string tone for string s at fret f
+function playNote(s, f) {
+  if (!audioEnabled) return;
+  const ctx = getAudioCtx();
+  const midi = OPEN_MIDI[s] + f;
+  const freq = midiToHz(midi);
+  const now = ctx.currentTime;
+
+  // Envelope: short attack, exponential decay like a plucked string
+  const env = ctx.createGain();
+  env.gain.setValueAtTime(0.001, now);
+  env.gain.linearRampToValueAtTime(0.7, now + 0.008);   // fast attack
+  env.gain.exponentialRampToValueAtTime(0.3, now + 0.08); // initial decay
+  env.gain.exponentialRampToValueAtTime(0.001, now + 2.2); // long sustain tail
+  env.connect(masterGain);
+
+  // String character: use sawtooth (rich harmonics) + slight detune for warmth
+  // Lower strings get more low-pass filtering (heavier tone)
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  // Higher strings are brighter; map string 0 (low E) → 800Hz cutoff, string 5 (high e) → 4000Hz
+  filter.frequency.value = 800 + (s / 5) * 3200;
+  filter.Q.value = 0.8;
+  filter.connect(env);
+
+  // Two slightly detuned oscillators for a chorus/string-like effect
+  const detunes = [-4, 4];
+  detunes.forEach(dt => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = freq;
+    osc.detune.value = dt;
+    osc.connect(filter);
+    osc.start(now);
+    osc.stop(now + 2.5);
+  });
+
+  // Add a subtle sub-oscillator (sine) for body/warmth
+  const sub = ctx.createOscillator();
+  const subGain = ctx.createGain();
+  subGain.gain.value = 0.25;
+  sub.type = 'sine';
+  sub.frequency.value = freq;
+  sub.connect(subGain);
+  subGain.connect(env);
+  sub.start(now);
+  sub.stop(now + 2.5);
+}
+
+function toggleAudio() {
+  audioEnabled = !audioEnabled;
+  const btn = document.getElementById('audioToggleBtn');
+  const volCtrl = document.getElementById('volCtrl');
+  if (audioEnabled) {
+    btn.textContent = '🔊 On';
+    btn.classList.add('audio-on');
+    volCtrl.style.opacity = '1';
+    volCtrl.style.pointerEvents = 'auto';
+    // Warm up the audio context on first toggle (requires user gesture)
+    getAudioCtx();
+  } else {
+    btn.textContent = '🔇 Off';
+    btn.classList.remove('audio-on');
+    volCtrl.style.opacity = '0.35';
+    volCtrl.style.pointerEvents = 'none';
+  }
+}
+
+function onVolumeChange(val) {
+  currentVolume = val / 100;
+  document.getElementById('volPct').textContent = val + '%';
+  // Update the slider track fill color
+  const pct = val + '%';
+  const slider = document.getElementById('volSlider');
+  slider.style.background = `linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}, var(--border) ${pct}, var(--border) 100%)`;
+  if (masterGain) masterGain.gain.value = currentVolume;
+}
+
+// Init slider fill on load
+window.addEventListener('load', () => onVolumeChange(70));
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
 let rootShape  = {};
 let displayDots = {};
 
+// ─── BUILD DOM ────────────────────────────────────────────────────────────────
 function build() {
   const nr = document.getElementById('fretNums');
   nr.innerHTML = '';
@@ -384,18 +539,23 @@ function build() {
   }
 }
 
+// ─── INTERACTION ─────────────────────────────────────────────────────────────
 function onCellClick(e) { toggleNote(+e.currentTarget.dataset.s, +e.currentTarget.dataset.f); }
 function onOpenStringClick(e) { toggleNote(+e.currentTarget.dataset.s, 0); }
 
 function toggleNote(s, f) {
   const key = `${s}-${f}`;
-  if (rootShape[key]) {
+  const isRemoving = !!rootShape[key];
+
+  if (isRemoving) {
     delete rootShape[key];
   } else {
     for (const k of Object.keys(rootShape)) {
       if (+k.split('-')[0] === s) delete rootShape[k];
     }
     rootShape[key] = true;
+    // Play note only when placing (not removing)
+    playNote(s, f);
   }
   computeAndDisplay();
 }
@@ -407,6 +567,7 @@ function clearAll() {
   setHint('Click frets to place notes — inversions appear live', false);
 }
 
+// ─── CHORD DETECTION ─────────────────────────────────────────────────────────
 function detectChord(pcs) {
   const pcSet = [...new Set(pcs)];
   const n = pcSet.length;
@@ -430,6 +591,7 @@ function detectChord(pcs) {
   return { root, name: template.name, labelFor: (pc) => { const iv=((pc-root)+12)%12; return template.lb[iv]||genericLabel(iv); } };
 }
 
+// ─── COMPUTE & DISPLAY ───────────────────────────────────────────────────────
 function computeAndDisplay() {
   const keys = Object.keys(rootShape);
   if (keys.length === 0) {
@@ -503,6 +665,7 @@ function computeAndDisplay() {
   render();
 }
 
+// ─── RENDER ──────────────────────────────────────────────────────────────────
 function render() {
   document.querySelectorAll('.dot').forEach(d=>d.remove());
   document.querySelectorAll('.string-name').forEach(nm=>{nm.style.color='';nm.style.fontWeight='';});
@@ -534,6 +697,7 @@ function setHint(msg, on) {
   h.className = 'hint' + (on ? ' on' : '');
 }
 
+// ─── MOBILE SCALING ──────────────────────────────────────────────────────────
 function scaleFretboard() {
   const wrap = document.querySelector('.fb-wrap');
   const scroll = document.querySelector('.fb-scroll');
