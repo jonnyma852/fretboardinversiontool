@@ -26,37 +26,31 @@
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'IBM Plex Mono', monospace;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 28px 16px 60px;
-  gap: 18px;
+  background: var(--bg); color: var(--text);
+  font-family: 'IBM Plex Mono', monospace; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 16px 60px; gap: 18px;
 }
 
 header { text-align: center; }
 header h1 { font-size: 1rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
-header p { font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.05em; }
+header p  { font-size: 0.65rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.05em; }
 
 .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: center; }
 .ctrl { display: flex; flex-direction: column; gap: 4px; }
 .ctrl-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
 .btn {
-  background: var(--surface); border: 1px solid var(--border);
-  color: var(--text); padding: 6px 14px; border-radius: 5px;
-  font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem;
-  cursor: pointer; transition: border-color 0.15s, background 0.15s, opacity 0.15s;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 6px 14px; border-radius: 5px; font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, opacity 0.15s;
 }
 .btn:hover { border-color: var(--accent); background: #222530; }
 .btn.red { border-color: #e84361; color: #e84361; }
 .btn.red:hover { background: #1e1018; }
 .btn.audio-on { border-color: #3cb86a; color: #3cb86a; background: #0e1f14; }
 .btn.audio-on:hover { background: #142a1a; }
-
 .btn.play-chord { border-color: var(--accent); color: var(--accent); letter-spacing: 0.05em; }
 .btn.play-chord:hover:not(:disabled) { background: #221f10; }
 .btn.play-chord:disabled { opacity: 0.3; cursor: not-allowed; border-color: var(--border); color: var(--muted); }
@@ -74,8 +68,8 @@ input[type=range].vol-slider {
   width: 90px; height: 4px; background: var(--border); border-radius: 2px; outline: none; cursor: pointer;
 }
 input[type=range].vol-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; appearance: none;
-  width: 14px; height: 14px; border-radius: 50%; background: var(--accent); cursor: pointer; transition: transform 0.1s;
+  -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent); cursor: pointer; transition: transform 0.1s;
 }
 input[type=range].vol-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
 input[type=range].vol-slider::-moz-range-thumb {
@@ -83,18 +77,13 @@ input[type=range].vol-slider::-moz-range-thumb {
 }
 .vol-pct { font-size: 0.65rem; color: var(--muted); width: 28px; text-align: right; }
 
-/* ── Root override row ─────────────────────────────────────── */
+/* ── Root row ──────────────────────────────────────────────── */
 .root-row {
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center;
-  padding: 8px 14px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
-  max-width: 640px;
-  transition: opacity 0.2s;
+  padding: 8px 14px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; max-width: 640px;
 }
-.root-row-label {
-  font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--muted); margin-right: 2px; white-space: nowrap;
-}
+.root-row-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-right: 2px; white-space: nowrap; }
 .root-pill {
   font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 700;
   padding: 3px 9px; border-radius: 20px; cursor: pointer; user-select: none;
@@ -102,38 +91,33 @@ input[type=range].vol-slider::-moz-range-thumb {
   transition: border-color 0.12s, background 0.12s, color 0.12s;
 }
 .root-pill:hover { border-color: var(--accent); color: var(--text); background: #222530; }
-/* Active note in the chord — highlight subtly so you know it's available */
 .root-pill.in-chord { border-color: #555; color: var(--text); }
-/* Currently selected root */
-.root-pill.selected {
-  background: var(--accent); border-color: var(--accent); color: #111;
-}
-/* Auto pill */
+.root-pill.selected { background: var(--accent); border-color: var(--accent); color: #111; }
 .root-pill.auto-pill { border-style: dashed; }
 .root-pill.auto-pill.selected { background: var(--surface); border-color: var(--accent); color: var(--accent); border-style: solid; }
 
+/* ── Status / hint ─────────────────────────────────────────── */
 .status-bar {
-  font-size: 0.75rem; color: var(--muted); text-align: center;
-  line-height: 1.7; padding: 10px 20px;
-  background: var(--surface); border: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--muted); text-align: center; line-height: 1.7;
+  padding: 10px 20px; background: var(--surface); border: 1px solid var(--border);
   border-radius: 6px; min-width: 340px; max-width: 640px;
 }
 .status-bar .name { font-size: 0.9rem; color: var(--accent); font-weight: 700; display: block; }
-.status-bar .sub { font-size: 0.65rem; color: var(--muted); }
+.status-bar .sub  { font-size: 0.65rem; color: var(--muted); }
 
 .hint {
-  font-size: 0.65rem; color: var(--muted);
-  border: 1px dashed var(--border); border-radius: 5px;
-  padding: 6px 14px; text-align: center; transition: border-color 0.2s, color 0.2s;
+  font-size: 0.65rem; color: var(--muted); border: 1px dashed var(--border);
+  border-radius: 5px; padding: 6px 14px; text-align: center; transition: border-color 0.2s, color 0.2s;
 }
 .hint.on { border-color: var(--accent); color: var(--accent); }
 
+/* ── Fretboard ─────────────────────────────────────────────── */
 .fb-scroll { width: 100%; overflow-x: auto; padding-bottom: 32px; padding-top: 28px; }
 @media (max-width: 900px) {
   .fb-scroll { overflow-x: hidden; padding-left: 0; padding-right: 0; }
-  .fb-wrap { transform-origin: top left; }
+  .fb-wrap   { transform-origin: top left; }
 }
-.fb-wrap { display: inline-flex; flex-direction: column; }
+.fb-wrap   { display: inline-flex; flex-direction: column; }
 .fb-scroll { text-align: center; }
 
 .fret-nums-row { display: flex; margin-left: 1px; margin-bottom: 5px; }
@@ -172,10 +156,10 @@ input[type=range].vol-slider::-moz-range-thumb {
 .string-row[data-s="5"]::after { height: 0.8px; }
 
 .string-name {
-  width: 40px; text-align: center; font-size: 0.68rem; font-weight: 700;
-  color: #888; flex-shrink: 0; user-select: none; position: relative; z-index: 3;
-  background: #fff; cursor: pointer; height: 46px;
-  display: flex; align-items: center; justify-content: center; transition: background 0.1s;
+  width: 40px; text-align: center; font-size: 0.68rem; font-weight: 700; color: #888;
+  flex-shrink: 0; user-select: none; position: relative; z-index: 3; background: #fff;
+  cursor: pointer; height: 46px; display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s;
 }
 .string-name:hover { background: transparent; }
 .string-name:hover::after {
@@ -192,6 +176,11 @@ input[type=range].vol-slider::-moz-range-thumb {
 }
 .fret-cell.nut { border-left: 5px solid #777; }
 
+/* Inversion group hover: highlight all cells sharing the same data-group */
+.fret-cell.inv-hover, .string-name.inv-hover {
+  background: rgba(232,184,75,0.10) !important;
+}
+
 .fret-marker {
   position: absolute; left: 50%; transform: translateX(-50%);
   width: 9px; height: 9px; border-radius: 50%; background: rgba(0,0,0,0.13); pointer-events: none; z-index: 10;
@@ -206,12 +195,19 @@ input[type=range].vol-slider::-moz-range-thumb {
 .fret-marker.middle.left  { top: calc(100% - 3px); bottom: auto; left: calc(50% - 8px); }
 .fret-marker.middle.right { top: calc(100% - 3px); bottom: auto; left: calc(50% + 8px); }
 
+/* Dots */
 .dot {
   width: 30px; height: 30px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.57rem; font-weight: 700; line-height: 1;
-  text-align: center; pointer-events: none; position: relative; z-index: 7; white-space: nowrap;
+  text-align: center; position: relative; z-index: 7; white-space: nowrap;
+  /* dots on inversions are clickable — pointer-events set in JS */
+  pointer-events: none;
+  transition: transform 0.1s, box-shadow 0.1s;
 }
+/* When audio is on, inversion dots become clickable and glow on hover */
+.dot.inv-clickable { pointer-events: auto; cursor: pointer; }
+.dot.inv-clickable:hover { transform: scale(1.18); box-shadow: 0 0 8px 2px rgba(255,255,255,0.25); }
 .dot-g0 { background: var(--g0); border: 2px solid var(--g0b); color: #fff; }
 .dot-g1 { background: var(--g1); border: 2px solid var(--g1b); color: #fff; }
 .dot-g2 { background: var(--g2); border: 2px solid var(--g2b); color: #fff; }
@@ -221,12 +217,17 @@ input[type=range].vol-slider::-moz-range-thumb {
 .dot-g6 { background: var(--g6); border: 2px solid var(--g6b); color: #111; }
 .dot-g7 { background: var(--g7); border: 2px solid var(--g7b); color: #111; }
 
+/* Legend */
 .legend { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: var(--muted); }
 .legend-sw { width: 14px; height: 14px; border-radius: 50%; }
 
 .interval-key { font-size: 0.62rem; color: var(--muted); text-align: center; line-height: 2; max-width: 660px; }
 .interval-key b { color: #9ab4e8; }
+
+/* Audio hint line below legend */
+.audio-hint { font-size: 0.6rem; color: var(--muted); text-align: center; font-style: italic; opacity: 0; transition: opacity 0.3s; }
+.audio-hint.visible { opacity: 1; }
 </style>
 </head>
 <body>
@@ -253,20 +254,18 @@ input[type=range].vol-slider::-moz-range-thumb {
     </div>
   </div>
   <div class="ctrl">
-    <span class="ctrl-label">Chord</span>
+    <span class="ctrl-label">Your Shape</span>
     <button class="btn play-chord" id="playChordBtn" onclick="playChord()" disabled title="Enable Note Audio to use">▶ Play Chord</button>
   </div>
 </div>
 
-<!-- Root override row — hidden until 2+ notes placed -->
 <div class="root-row" id="rootRow" style="display:none;">
   <span class="root-row-label">Root</span>
-  <!-- Pills injected by JS -->
 </div>
 
 <div class="status-bar">
   <span class="name" id="statusName">Click any frets to place your chord shape</span>
-  <span class="sub" id="statusSub">One note per string — chord auto-detected live</span>
+  <span class="sub"  id="statusSub">One note per string — chord auto-detected live</span>
 </div>
 
 <div class="hint" id="hint">Click frets to place your chord shape — inversions appear live as you select notes</div>
@@ -289,6 +288,8 @@ input[type=range].vol-slider::-moz-range-thumb {
   <div class="legend-item"><div class="legend-sw" style="background:var(--g7)"></div>Inv 7</div>
 </div>
 
+<div class="audio-hint" id="audioHint">🔊 Audio on — click any inversion dot to hear it</div>
+
 <div class="interval-key">
   <b>R</b>=Root &nbsp;·&nbsp; <b>△3</b>=Maj 3rd &nbsp;·&nbsp; <b>m3</b>=Min 3rd &nbsp;·&nbsp;
   <b>p5</b>=Perf 5th &nbsp;·&nbsp; <b>b5</b>=Flat 5th &nbsp;·&nbsp; <b>#5</b>=Aug 5th &nbsp;·&nbsp;
@@ -297,6 +298,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 </div>
 
 <script>
+// ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const NUM_FRETS = 24;
 const FRET_W = 44;
@@ -305,44 +307,49 @@ const SNAMES = ['E','A','D','G','B','e'];
 const OPEN_MIDI = [40, 45, 50, 55, 59, 64];
 
 const CHORD_LIBRARY = [
-  { ivs:[0,4,7],    name:'Major',         lb:{0:'R',4:'△3',7:'p5'} },
-  { ivs:[0,3,7],    name:'Minor',         lb:{0:'R',3:'m3',7:'p5'} },
-  { ivs:[0,4,8],    name:'Augmented',     lb:{0:'R',4:'△3',8:'#5'} },
-  { ivs:[0,3,6],    name:'Diminished',    lb:{0:'R',3:'m3',6:'b5'} },
-  { ivs:[0,2,7],    name:'Sus2',          lb:{0:'R',2:'2',7:'p5'} },
-  { ivs:[0,5,7],    name:'Sus4',          lb:{0:'R',5:'4',7:'p5'} },
-  { ivs:[0,4,7,11], name:'Major 7',       lb:{0:'R',4:'△3',7:'p5',11:'△7'} },
-  { ivs:[0,3,7,10], name:'Minor 7',       lb:{0:'R',3:'m3',7:'p5',10:'m7'} },
-  { ivs:[0,4,7,10], name:'Dom 7',         lb:{0:'R',4:'△3',7:'p5',10:'m7'} },
-  { ivs:[0,3,6,9],  name:'Dim 7',         lb:{0:'R',3:'m3',6:'b5',9:'°7'} },
-  { ivs:[0,3,6,10], name:'Half-Dim ø7',   lb:{0:'R',3:'m3',6:'b5',10:'m7'} },
-  { ivs:[0,4,8,10], name:'Aug 7',         lb:{0:'R',4:'△3',8:'#5',10:'m7'} },
-  { ivs:[0,4,8,11], name:'Aug Maj7',      lb:{0:'R',4:'△3',8:'#5',11:'△7'} },
-  { ivs:[0,3,7,11], name:'Min Maj7',      lb:{0:'R',3:'m3',7:'p5',11:'△7'} },
-  { ivs:[0,2,7,10], name:'Sus2 7',        lb:{0:'R',2:'2',7:'p5',10:'m7'} },
-  { ivs:[0,5,7,10], name:'Sus4 7',        lb:{0:'R',5:'4',7:'p5',10:'m7'} },
-  { ivs:[0,4,7,9],  name:'Major 6',       lb:{0:'R',4:'△3',7:'p5',9:'6'} },
-  { ivs:[0,3,7,9],  name:'Minor 6',       lb:{0:'R',3:'m3',7:'p5',9:'6'} },
+  { ivs:[0,4,7],      name:'Major',       lb:{0:'R',4:'△3',7:'p5'} },
+  { ivs:[0,3,7],      name:'Minor',       lb:{0:'R',3:'m3',7:'p5'} },
+  { ivs:[0,4,8],      name:'Augmented',   lb:{0:'R',4:'△3',8:'#5'} },
+  { ivs:[0,3,6],      name:'Diminished',  lb:{0:'R',3:'m3',6:'b5'} },
+  { ivs:[0,2,7],      name:'Sus2',        lb:{0:'R',2:'2',7:'p5'} },
+  { ivs:[0,5,7],      name:'Sus4',        lb:{0:'R',5:'4',7:'p5'} },
+  { ivs:[0,4,7,11],   name:'Major 7',     lb:{0:'R',4:'△3',7:'p5',11:'△7'} },
+  { ivs:[0,3,7,10],   name:'Minor 7',     lb:{0:'R',3:'m3',7:'p5',10:'m7'} },
+  { ivs:[0,4,7,10],   name:'Dom 7',       lb:{0:'R',4:'△3',7:'p5',10:'m7'} },
+  { ivs:[0,3,6,9],    name:'Dim 7',       lb:{0:'R',3:'m3',6:'b5',9:'°7'} },
+  { ivs:[0,3,6,10],   name:'Half-Dim ø7', lb:{0:'R',3:'m3',6:'b5',10:'m7'} },
+  { ivs:[0,4,8,10],   name:'Aug 7',       lb:{0:'R',4:'△3',8:'#5',10:'m7'} },
+  { ivs:[0,4,8,11],   name:'Aug Maj7',    lb:{0:'R',4:'△3',8:'#5',11:'△7'} },
+  { ivs:[0,3,7,11],   name:'Min Maj7',    lb:{0:'R',3:'m3',7:'p5',11:'△7'} },
+  { ivs:[0,2,7,10],   name:'Sus2 7',      lb:{0:'R',2:'2',7:'p5',10:'m7'} },
+  { ivs:[0,5,7,10],   name:'Sus4 7',      lb:{0:'R',5:'4',7:'p5',10:'m7'} },
+  { ivs:[0,4,7,9],    name:'Major 6',     lb:{0:'R',4:'△3',7:'p5',9:'6'} },
+  { ivs:[0,3,7,9],    name:'Minor 6',     lb:{0:'R',3:'m3',7:'p5',9:'6'} },
   { ivs:[0,4,7,11,2], name:'Major 9',     lb:{0:'R',4:'△3',7:'p5',11:'△7',2:'9'} },
   { ivs:[0,3,7,10,2], name:'Minor 9',     lb:{0:'R',3:'m3',7:'p5',10:'m7',2:'9'} },
   { ivs:[0,4,7,10,2], name:'Dom 9',       lb:{0:'R',4:'△3',7:'p5',10:'m7',2:'9'} },
   { ivs:[0,4,7,11,5], name:'Major 11',    lb:{0:'R',4:'△3',7:'p5',11:'△7',5:'11'} },
-  { ivs:[0,4,7,2],  name:'Add9',          lb:{0:'R',2:'9',4:'△3',7:'p5'} },
-  { ivs:[0,3,7,2],  name:'Min Add9',      lb:{0:'R',2:'9',3:'m3',7:'p5'} },
+  { ivs:[0,4,7,2],    name:'Add9',        lb:{0:'R',2:'9',4:'△3',7:'p5'} },
+  { ivs:[0,3,7,2],    name:'Min Add9',    lb:{0:'R',2:'9',3:'m3',7:'p5'} },
 ];
 
-function genericLabel(interval) {
-  const map = {0:'R',1:'b2',2:'2',3:'m3',4:'△3',5:'4',6:'b5',7:'p5',8:'#5',9:'6',10:'m7',11:'△7'};
-  return map[interval] || interval.toString();
+function genericLabel(iv) {
+  return ({0:'R',1:'b2',2:'2',3:'m3',4:'△3',5:'4',6:'b5',7:'p5',8:'#5',9:'6',10:'m7',11:'△7'})[iv] ?? String(iv);
 }
 
-const SINGLE_MARKER_FRETS = new Set([3, 5, 7, 9, 15, 17, 19, 21]);
-const DOUBLE_MARKER_FRETS  = new Set([12, 24]);
+const SINGLE_MARKER_FRETS = new Set([3,5,7,9,15,17,19,21]);
+const DOUBLE_MARKER_FRETS  = new Set([12,24]);
 
 function noteAt(s, f) { return (OPEN[s] + f) % 12; }
+function midiToHz(m)  { return 440 * Math.pow(2, (m - 69) / 12); }
 
-// ─── AUDIO ───────────────────────────────────────────────────────────────────
-let audioCtx = null, masterGain = null, audioEnabled = false, currentVolume = 0.70;
+// ─── AUDIO: KARPLUS–STRONG ────────────────────────────────────────────────────
+// Physical string model: fill a delay buffer with noise, then feed it back
+// through a lowpass filter. Each cycle, the filter damps the signal — exactly
+// how a real string loses energy into the body of the guitar.
+// No oscillators, no synth — just resonance.
+let audioCtx = null, masterGain = null;
+let audioEnabled = false, currentVolume = 0.70;
 
 function getAudioCtx() {
   if (!audioCtx) {
@@ -354,47 +361,140 @@ function getAudioCtx() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
-function midiToHz(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
 
-function playNoteAt(s, f, startOffset = 0) {
-  if (!audioEnabled) return;
+/**
+ * Karplus-Strong via ScriptProcessor (wide browser support).
+ * @param {number} midi   - MIDI note number
+ * @param {number} string - guitar string index 0–5 (affects tone colour)
+ * @param {number} when   - AudioContext time offset
+ */
+function ksPluck(midi, string, when = 0) {
   const ctx = getAudioCtx();
-  const freq = midiToHz(OPEN_MIDI[s] + f);
-  const now = ctx.currentTime + startOffset;
-  const env = ctx.createGain();
-  env.gain.setValueAtTime(0.001, now);
-  env.gain.linearRampToValueAtTime(0.7, now + 0.008);
-  env.gain.exponentialRampToValueAtTime(0.3, now + 0.08);
-  env.gain.exponentialRampToValueAtTime(0.001, now + 2.2);
-  env.connect(masterGain);
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.value = 800 + (s / 5) * 3200;
-  filter.Q.value = 0.8;
-  filter.connect(env);
-  [-4, 4].forEach(dt => {
-    const osc = ctx.createOscillator();
-    osc.type = 'sawtooth'; osc.frequency.value = freq; osc.detune.value = dt;
-    osc.connect(filter); osc.start(now); osc.stop(now + 2.5);
-  });
-  const sub = ctx.createOscillator();
-  const subGain = ctx.createGain(); subGain.gain.value = 0.25;
-  sub.type = 'sine'; sub.frequency.value = freq;
-  sub.connect(subGain); subGain.connect(env); sub.start(now); sub.stop(now + 2.5);
+  const freq = midiToHz(midi);
+  const sampleRate = ctx.sampleRate;
+
+  // Period in samples (how long the "string" is)
+  const period = Math.round(sampleRate / freq);
+
+  // Noise burst fills the initial delay buffer — this is the "pick" attack
+  const bufLen = period;
+  const noiseBuffer = new Float32Array(bufLen);
+
+  // Slightly different noise character per string:
+  // lower strings = more low-frequency bias (warm, thick pick sound)
+  for (let i = 0; i < bufLen; i++) {
+    if (string <= 1) {
+      // Low E / A: blend white + smoothed noise for a muffled thud
+      noiseBuffer[i] = (Math.random() * 2 - 1) * 0.7 + (i > 0 ? noiseBuffer[i-1] * 0.3 : 0);
+    } else {
+      noiseBuffer[i] = Math.random() * 2 - 1;
+    }
+  }
+
+  // Feedback buffer — starts as the noise burst, gets filtered each cycle
+  let buf = noiseBuffer.slice();
+  let pos = 0;
+  let sample = 0;
+
+  // Damping coefficient: higher strings decay faster (thinner string)
+  // Range ~0.990 (high e, fast decay) to ~0.997 (low E, long sustain)
+  const damping = 0.990 + (string / 5) * 0.007;
+
+  // Body resonance: small body filter adds warmth
+  // Tuned per string — lower strings get more bass emphasis
+  const bodyFreq = 120 + string * 60; // 120Hz–420Hz
+  let bodyPrev = 0;
+
+  // Total duration: lower strings ring longer
+  const duration = 1.5 + (string / 5) * 2.5; // 1.5s–4s
+  const totalSamples = Math.ceil(sampleRate * duration);
+
+  // Build the output buffer
+  const outBuffer = ctx.createBuffer(1, totalSamples, sampleRate);
+  const outData = outBuffer.getChannelData(0);
+
+  // KS loop
+  for (let n = 0; n < totalSamples; n++) {
+    const next = (pos + 1) % period;
+    // Averaging filter (lowpass) — this is the core of Karplus-Strong
+    sample = damping * 0.5 * (buf[pos] + buf[next]);
+    // Subtle body resonance via 1-pole filter
+    const bodyAlpha = 1 - Math.exp(-2 * Math.PI * bodyFreq / sampleRate);
+    bodyPrev = bodyPrev + bodyAlpha * (sample - bodyPrev);
+    outData[n] = sample + bodyPrev * 0.08;
+    buf[pos] = sample;
+    pos = (pos + 1) % period;
+  }
+
+  // Envelope: tiny fade-in to avoid click, short fade-out at tail
+  const fadeInSamples  = Math.min(64, totalSamples);
+  const fadeOutSamples = Math.min(Math.ceil(sampleRate * 0.04), totalSamples);
+  for (let i = 0; i < fadeInSamples; i++)  outData[i] *= i / fadeInSamples;
+  for (let i = 0; i < fadeOutSamples; i++) outData[totalSamples - 1 - i] *= i / fadeOutSamples;
+
+  // Play it
+  const source = ctx.createBufferSource();
+  source.buffer = outBuffer;
+
+  // Gentle EQ per string: low E gets a bass boost, high e gets a slight mid cut
+  const eq = ctx.createBiquadFilter();
+  if (string <= 1) {
+    eq.type = 'lowshelf'; eq.frequency.value = 200; eq.gain.value = 3;
+  } else if (string >= 4) {
+    eq.type = 'peaking'; eq.frequency.value = 900; eq.gain.value = -2; eq.Q.value = 0.8;
+  } else {
+    eq.type = 'peaking'; eq.frequency.value = 400; eq.gain.value = 1; eq.Q.value = 1;
+  }
+
+  source.connect(eq);
+  eq.connect(masterGain);
+  source.start(ctx.currentTime + when);
 }
-function playNote(s, f) { playNoteAt(s, f, 0); }
+
+function playNoteKS(s, f, when = 0) {
+  if (!audioEnabled) return;
+  ksPluck(OPEN_MIDI[s] + f, s, when);
+}
+
+function playNote(s, f) { playNoteKS(s, f, 0); }
+
+// ─── STRUM HELPERS ───────────────────────────────────────────────────────────
+const STRUM = 0.032; // 32ms between strings
+
+function strumNotes(notes, btnEl) {
+  // notes: [{s, f}, ...] sorted low→high
+  if (!audioEnabled) return;
+  notes.forEach((n, i) => playNoteKS(n.s, n.f, i * STRUM));
+  if (btnEl) {
+    const orig = btnEl.textContent;
+    btnEl.classList.add('strumming'); btnEl.textContent = '♪ Playing…';
+    setTimeout(() => { btnEl.classList.remove('strumming'); btnEl.textContent = orig; },
+      notes.length * STRUM * 1000 + 300);
+  }
+}
 
 function playChord() {
   const keys = Object.keys(rootShape);
   if (!keys.length || !audioEnabled) return;
-  const btn = document.getElementById('playChordBtn');
-  btn.classList.add('strumming'); btn.textContent = '♪ Playing…';
   const notes = keys.map(k => { const [s,f]=k.split('-').map(Number); return{s,f}; }).sort((a,b)=>a.s-b.s);
-  const STRUM = 0.032;
-  notes.forEach((n, i) => playNoteAt(n.s, n.f, i * STRUM));
-  setTimeout(() => { btn.classList.remove('strumming'); btn.textContent = '▶ Play Chord'; }, notes.length * STRUM * 1000 + 300);
+  strumNotes(notes, document.getElementById('playChordBtn'));
 }
 
+// Play a specific inversion group by its group index
+function playInversion(groupId) {
+  if (!audioEnabled) return;
+  const notes = [];
+  for (const [key, val] of Object.entries(displayDots)) {
+    if (val.group === groupId) {
+      const [s, f] = key.split('-').map(Number);
+      notes.push({ s, f });
+    }
+  }
+  notes.sort((a, b) => a.s - b.s);
+  strumNotes(notes, null);
+}
+
+// ─── AUDIO TOGGLE ─────────────────────────────────────────────────────────────
 function toggleAudio() {
   audioEnabled = !audioEnabled;
   const btn = document.getElementById('audioToggleBtn');
@@ -404,11 +504,15 @@ function toggleAudio() {
     btn.textContent = '🔊 On'; btn.classList.add('audio-on');
     volCtrl.style.opacity = '1'; volCtrl.style.pointerEvents = 'auto';
     playBtn.disabled = false; getAudioCtx();
+    document.getElementById('audioHint').classList.add('visible');
   } else {
     btn.textContent = '🔇 Off'; btn.classList.remove('audio-on');
     volCtrl.style.opacity = '0.35'; volCtrl.style.pointerEvents = 'none';
     playBtn.disabled = true; playBtn.classList.remove('strumming'); playBtn.textContent = '▶ Play Chord';
+    document.getElementById('audioHint').classList.remove('visible');
   }
+  // Re-render dots so clickability reflects new audio state
+  render();
 }
 
 function onVolumeChange(val) {
@@ -422,44 +526,31 @@ function onVolumeChange(val) {
 window.addEventListener('load', () => onVolumeChange(70));
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let rootShape   = {};
-let displayDots = {};
-let rootOverride = null; // null = auto; 0–11 = forced root PC
+let rootShape    = {};
+let displayDots  = {};  // key → { group, label }
+let rootOverride = null;
 
-// ─── ROOT OVERRIDE UI ────────────────────────────────────────────────────────
+// ─── ROOT ROW ────────────────────────────────────────────────────────────────
 function buildRootRow(chordPCs) {
-  // chordPCs: array of pitch classes currently in play
   const row = document.getElementById('rootRow');
   row.innerHTML = '<span class="root-row-label">Root</span>';
-
-  // Auto pill
   const auto = document.createElement('span');
   auto.className = 'root-pill auto-pill' + (rootOverride === null ? ' selected' : '');
   auto.textContent = 'Auto';
-  auto.title = 'Let the tool detect the root automatically';
   auto.addEventListener('click', () => { rootOverride = null; computeAndDisplay(); });
   row.appendChild(auto);
-
-  // 12 note pills — notes in the chord are highlighted
-  const inChordSet = new Set(chordPCs);
+  const inSet = new Set(chordPCs);
   for (let pc = 0; pc < 12; pc++) {
     const pill = document.createElement('span');
-    pill.className = 'root-pill' +
-      (inChordSet.has(pc) ? ' in-chord' : '') +
-      (rootOverride === pc ? ' selected' : '');
+    pill.className = 'root-pill' + (inSet.has(pc) ? ' in-chord' : '') + (rootOverride === pc ? ' selected' : '');
     pill.textContent = NOTES[pc];
-    pill.title = inChordSet.has(pc) ? `Set ${NOTES[pc]} as root` : `${NOTES[pc]} (not in current chord)`;
-    const capturedPc = pc;
-    pill.addEventListener('click', () => { rootOverride = capturedPc; computeAndDisplay(); });
+    const cap = pc;
+    pill.addEventListener('click', () => { rootOverride = cap; computeAndDisplay(); });
     row.appendChild(pill);
   }
-
   row.style.display = 'flex';
 }
-
-function hideRootRow() {
-  document.getElementById('rootRow').style.display = 'none';
-}
+function hideRootRow() { document.getElementById('rootRow').style.display = 'none'; }
 
 // ─── BUILD DOM ────────────────────────────────────────────────────────────────
 function build() {
@@ -494,9 +585,9 @@ function build() {
         if (SINGLE_MARKER_FRETS.has(f)) {
           const m = document.createElement('div'); m.className = `fret-marker ${pos}`; cell.appendChild(m);
         } else if (DOUBLE_MARKER_FRETS.has(f)) {
-          const m1 = document.createElement('div'); m1.className = `fret-marker ${pos} left`;
-          const m2 = document.createElement('div'); m2.className = `fret-marker ${pos} right`;
-          cell.appendChild(m1); cell.appendChild(m2);
+          ['left','right'].forEach(side => {
+            const m = document.createElement('div'); m.className = `fret-marker ${pos} ${side}`; cell.appendChild(m);
+          });
         }
       }
       row.appendChild(cell);
@@ -538,30 +629,23 @@ function clearAll() {
 function detectChord(pcs, forcedRoot = null) {
   const pcSet = [...new Set(pcs)];
   const n = pcSet.length;
-
-  // If a root is forced, only try that root
-  const rootsToTry = forcedRoot !== null ? [forcedRoot] : Array.from({length:12}, (_,i) => i);
-
-  let bestMatch = null, bestScore = -1;
-  for (const r of rootsToTry) {
-    const intervals = pcSet.map(pc => ((pc - r) + 12) % 12).sort((a,b) => a-b);
-    for (const template of CHORD_LIBRARY) {
-      const tSet = new Set(template.ivs);
-      const iSet = new Set(intervals);
-      if (!intervals.every(i => tSet.has(i))) continue;
-      const covered = template.ivs.filter(i => iSet.has(i)).length;
-      const score = covered + (template.ivs.length === n ? 10 : 0);
-      if (score > bestScore) { bestScore = score; bestMatch = { root: r, template }; }
+  const roots = forcedRoot !== null ? [forcedRoot] : Array.from({length:12}, (_,i) => i);
+  let best = null, bestScore = -1;
+  for (const r of roots) {
+    const ivs = pcSet.map(pc => ((pc - r + 12) % 12)).sort((a,b) => a-b);
+    for (const t of CHORD_LIBRARY) {
+      const tSet = new Set(t.ivs), iSet = new Set(ivs);
+      if (!ivs.every(i => tSet.has(i))) continue;
+      const score = t.ivs.filter(i => iSet.has(i)).length + (t.ivs.length === n ? 10 : 0);
+      if (score > bestScore) { bestScore = score; best = { root: r, template: t }; }
     }
   }
-
-  if (!bestMatch) {
-    // No template match — use the forced root if set, else first note
-    const root = forcedRoot !== null ? forcedRoot : pcSet[0];
-    return { root, name: pcSet.map(p => NOTES[p]).join('/'), labelFor: (pc) => genericLabel(((pc-root)+12)%12) };
+  if (!best) {
+    const root = forcedRoot ?? pcSet[0];
+    return { root, name: pcSet.map(p => NOTES[p]).join('/'), labelFor: pc => genericLabel(((pc-root+12)%12)) };
   }
-  const { root, template } = bestMatch;
-  return { root, name: template.name, labelFor: (pc) => { const iv=((pc-root)+12)%12; return template.lb[iv]||genericLabel(iv); } };
+  const { root, template: t } = best;
+  return { root, name: t.name, labelFor: pc => { const iv=(pc-root+12)%12; return t.lb[iv] ?? genericLabel(iv); } };
 }
 
 // ─── COMPUTE & DISPLAY ───────────────────────────────────────────────────────
@@ -572,55 +656,48 @@ function computeAndDisplay() {
     displayDots = {}; render(); hideRootRow();
     document.getElementById('statusName').textContent = 'Click frets to place your chord shape';
     document.getElementById('statusSub').textContent = 'One note per string — inversions appear live';
-    setHint('Click any fret to start — the chord is auto-detected from your notes', false);
+    setHint('Click any fret to start — chord auto-detected from your notes', false);
     return;
   }
 
   displayDots = {};
   for (const k of keys) {
-    const [ss,ff] = k.split('-').map(Number);
-    displayDots[k] = { group: 0, label: NOTES[noteAt(ss,ff)] };
+    const [s,f] = k.split('-').map(Number);
+    displayDots[k] = { group: 0, label: NOTES[noteAt(s,f)] };
   }
   render();
 
   if (keys.length === 1) {
-    const [ss,ff] = keys[0].split('-').map(Number);
-    document.getElementById('statusName').textContent = NOTES[noteAt(ss,ff)];
-    document.getElementById('statusSub').textContent = 'Add more notes — chord detected once 2+ notes placed';
-    setHint('Keep placing notes...', false);
-    hideRootRow();
-    return;
+    const [s,f] = keys[0].split('-').map(Number);
+    document.getElementById('statusName').textContent = NOTES[noteAt(s,f)];
+    document.getElementById('statusSub').textContent = 'Add more notes — chord detected once 2+ placed';
+    setHint('Keep placing notes...', false); hideRootRow(); return;
   }
 
-  const playedPCs = [...new Set(keys.map(k => { const [s,f]=k.split('-').map(Number); return noteAt(s,f); }))];
-
-  // Show root row — always refresh it so in-chord highlights stay current
+  const playedPCs   = [...new Set(keys.map(k => { const [s,f]=k.split('-').map(Number); return noteAt(s,f); }))];
   buildRootRow(playedPCs);
 
   const { root, name, labelFor } = detectChord(playedPCs, rootOverride);
-  const searchPCs = playedPCs;
   const usedStrings = [...new Set(keys.map(k => +k.split('-')[0]))].sort((a,b) => a-b);
-  const numStrings = usedStrings.length;
 
   const optsByString = {};
   for (const s of usedStrings) {
     optsByString[s] = [];
     for (let f = 0; f <= NUM_FRETS; f++) {
       const pc = noteAt(s,f);
-      if (searchPCs.includes(pc)) optsByString[s].push({ f, pc, label: labelFor(pc) });
+      if (playedPCs.includes(pc)) optsByString[s].push({ f, pc, label: labelFor(pc) });
     }
   }
 
   const allVoicings = [];
-  function recurse(idx, chosen) {
-    if (idx === numStrings) {
-      const covered = new Set(chosen.map(c=>c.pc));
-      if (searchPCs.every(pc=>covered.has(pc))) allVoicings.push([...chosen]);
+  (function recurse(idx, chosen) {
+    if (idx === usedStrings.length) {
+      const cov = new Set(chosen.map(c=>c.pc));
+      if (playedPCs.every(pc => cov.has(pc))) allVoicings.push([...chosen]);
       return;
     }
-    for (const opt of optsByString[usedStrings[idx]]) recurse(idx+1, [...chosen,{s:usedStrings[idx],...opt}]);
-  }
-  recurse(0,[]);
+    for (const opt of optsByString[usedStrings[idx]]) recurse(idx+1, [...chosen, {s:usedStrings[idx], ...opt}]);
+  })(0, []);
 
   const seen = new Set(), unique = [];
   for (const v of allVoicings) {
@@ -630,16 +707,16 @@ function computeAndDisplay() {
   unique.sort((a,b) => Math.min(...a.map(n=>n.f)) - Math.min(...b.map(n=>n.f)));
 
   const rootSig = keys.map(k=>{const[s,f]=k.split('-').map(Number);return`${s}:${f}`;}).sort().join('|');
-  let rootIdx = unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
+  let rootIdx = unique.findIndex(v => v.map(n=>`${n.s}:${n.f}`).sort().join('|') === rootSig);
   if (rootIdx < 0) rootIdx = 0;
 
   const ordered = [...unique.slice(rootIdx), ...unique.slice(0, rootIdx)];
-  const selectedVoicings = [], occupiedCells = new Set();
+  const selectedVoicings = [], occupied = new Set();
   for (const voicing of ordered) {
-    const cells = voicing.map(n=>`${n.s}-${n.f}`);
-    if (cells.every(c=>!occupiedCells.has(c))) {
+    const cells = voicing.map(n => `${n.s}-${n.f}`);
+    if (cells.every(c => !occupied.has(c))) {
       selectedVoicings.push({ voicing, group: selectedVoicings.length % 8 });
-      cells.forEach(c=>occupiedCells.add(c));
+      cells.forEach(c => occupied.add(c));
     }
   }
 
@@ -648,39 +725,80 @@ function computeAndDisplay() {
     for (const n of voicing) displayDots[`${n.s}-${n.f}`] = { group, label: n.label };
 
   const rootName = NOTES[root];
-  const overrideTag = rootOverride !== null ? ' ✎' : '';
-  document.getElementById('statusName').textContent = `${rootName} ${name}${overrideTag}`;
+  const lock = rootOverride !== null;
+  document.getElementById('statusName').textContent = `${rootName} ${name}${lock ? ' ✎' : ''}`;
   document.getElementById('statusSub').textContent =
     `Strings: ${usedStrings.map(s=>SNAMES[s]).join(' ')} · ${unique.length} voicings · ${selectedVoicings.length} shown` +
-    (rootOverride !== null ? ` · root locked to ${NOTES[rootOverride]}` : '');
-  setHint(
-    rootOverride !== null
-      ? `✎ Root locked to ${rootName} — click Auto to release`
-      : `✓ Auto-detected: ${rootName} ${name} — ${selectedVoicings.length} inversions across full neck`,
-    true
-  );
+    (lock ? ` · root locked to ${rootName}` : '');
+  setHint(lock
+    ? `✎ Root locked to ${rootName} — click Auto to release`
+    : `✓ Auto-detected: ${rootName} ${name} — ${selectedVoicings.length} inversions · ${audioEnabled ? 'click any inversion dot to hear it' : 'enable audio to hear inversions'}`,
+    true);
   render();
 }
 
 // ─── RENDER ──────────────────────────────────────────────────────────────────
+// Groups map for inversion hover: groupId → [cells/string-names]
+let groupElements = {}; // groupId → Set of DOM elements
+
 function render() {
-  document.querySelectorAll('.dot').forEach(d=>d.remove());
-  document.querySelectorAll('.string-name').forEach(nm=>{nm.style.color='';nm.style.fontWeight='';});
-  for (const key in displayDots) {
-    const [s,f] = key.split('-').map(Number);
-    const { group, label } = displayDots[key];
+  document.querySelectorAll('.dot').forEach(d => d.remove());
+  document.querySelectorAll('.string-name').forEach(nm => { nm.style.color=''; nm.style.fontWeight=''; });
+  groupElements = {};
+
+  for (const [key, { group, label }] of Object.entries(displayDots)) {
+    const [s, f] = key.split('-').map(Number);
+
+    const dot = document.createElement('div');
+    dot.className = `dot dot-g${group}`;
+    dot.textContent = label;
+    dot.dataset.group = group;
+
+    // All inversion groups (≥1) are clickable when audio is on
+    if (audioEnabled && group > 0) {
+      dot.classList.add('inv-clickable');
+      dot.addEventListener('click', e => {
+        e.stopPropagation();
+        playInversion(group);
+        // Brief flash on all dots in this group
+        (groupElements[group] || new Set()).forEach(el => {
+          el.style.transform = 'scale(1.2)';
+          setTimeout(() => { el.style.transform = ''; }, 180);
+        });
+      });
+      // Hover: highlight all cells in the same group
+      dot.addEventListener('mouseenter', () => highlightGroup(group, true));
+      dot.addEventListener('mouseleave', () => highlightGroup(group, false));
+    }
+
     if (f === 0) {
-      const nm = document.querySelector(`.string-name[data-s="${s}"]`); if (!nm) continue;
-      const dot = document.createElement('div'); dot.className = `dot dot-g${group}`; dot.textContent = label;
+      const nm = document.querySelector(`.string-name[data-s="${s}"]`);
+      if (!nm) continue;
       nm.textContent = ''; nm.appendChild(dot);
+      if (!groupElements[group]) groupElements[group] = new Set();
+      groupElements[group].add(dot);
     } else {
-      const cell = document.querySelector(`.fret-cell[data-s="${s}"][data-f="${f}"]`); if (!cell) continue;
-      const dot = document.createElement('div'); dot.className = `dot dot-g${group}`; dot.textContent = label;
+      const cell = document.querySelector(`.fret-cell[data-s="${s}"][data-f="${f}"]`);
+      if (!cell) continue;
       cell.appendChild(dot);
+      if (!groupElements[group]) groupElements[group] = new Set();
+      groupElements[group].add(dot);
     }
   }
+
   document.querySelectorAll('.string-name').forEach(nm => {
     if (!nm.querySelector('.dot')) nm.textContent = SNAMES[+nm.dataset.s];
+  });
+}
+
+function highlightGroup(groupId, on) {
+  if (!groupElements[groupId]) return;
+  // Find the parent cells/string-names and toggle the inv-hover class
+  groupElements[groupId].forEach(dot => {
+    const parent = dot.parentElement;
+    if (!parent) return;
+    if (on) parent.classList.add('inv-hover');
+    else parent.classList.remove('inv-hover');
   });
 }
 
@@ -691,16 +809,15 @@ function setHint(msg, on) {
 
 // ─── MOBILE SCALING ──────────────────────────────────────────────────────────
 function scaleFretboard() {
-  const wrap = document.querySelector('.fb-wrap');
-  const scroll = document.querySelector('.fb-scroll');
+  const wrap = document.querySelector('.fb-wrap'), scroll = document.querySelector('.fb-scroll');
   if (!wrap || !scroll) return;
   wrap.style.transform = ''; wrap.style.width = '';
-  const naturalW = wrap.scrollWidth, availableW = scroll.clientWidth;
-  if (availableW < naturalW) {
-    const scale = availableW / naturalW;
-    wrap.style.transform = `scale(${scale})`;
+  const nat = wrap.scrollWidth, avail = scroll.clientWidth;
+  if (avail < nat) {
+    const sc = avail / nat;
+    wrap.style.transform = `scale(${sc})`;
     wrap.style.transformOrigin = 'top left';
-    wrap.style.marginBottom = `-${wrap.scrollHeight * (1 - scale)}px`;
+    wrap.style.marginBottom = `-${wrap.scrollHeight * (1 - sc)}px`;
   }
 }
 window.addEventListener('resize', scaleFretboard);
