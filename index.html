@@ -29,38 +29,37 @@ body {
   padding: 24px 12px 80px; gap: 0;
 }
 
-/* ── Header ──────────────────────────────────────────────── */
+/* ── Header ───────────────────────────────────────────────── */
 header { text-align: center; margin-bottom: 20px; }
 header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
-header p  { font-size: 0.75rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.04em; }
+header p  { font-size: 0.75rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.05em; }
 
-/* ── Global audio bar ────────────────────────────────────── */
+/* ── Global audio bar ─────────────────────────────────────── */
 .global-controls {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center;
   padding: 10px 16px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 8px; margin-bottom: 16px; width: 100%; max-width: 760px;
+  border-radius: 8px; margin-bottom: 16px; width: 100%; max-width: 700px;
 }
-.gc-label { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
-#globalAudioHint { font-size: 0.68rem; color: var(--muted); margin-left: 4px; }
+.gc-label { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
 
-/* ── Chord instances ─────────────────────────────────────── */
+/* ── Chord instances ──────────────────────────────────────── */
 .chord-instances { display: flex; flex-direction: column; align-items: center; gap: 40px; width: 100%; }
 
 .chord-instance {
   width: 100%; max-width: 1200px;
   background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 18px 16px 22px; display: flex; flex-direction: column; gap: 11px;
+  padding: 16px 14px 20px; display: flex; flex-direction: column; gap: 10px;
 }
 .chord-instance-header {
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
 }
 .chord-num {
   font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--muted); padding: 3px 10px; border: 1px solid var(--border); border-radius: 4px;
+  color: var(--muted); padding: 2px 10px; border: 1px solid var(--border); border-radius: 4px;
 }
-.instance-actions { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+.instance-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
-/* ── Buttons ─────────────────────────────────────────────── */
+/* ── Buttons ──────────────────────────────────────────────── */
 .btn {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
   padding: 7px 14px; border-radius: 5px; font-family: 'IBM Plex Mono', monospace;
@@ -72,16 +71,18 @@ header p  { font-size: 0.75rem; color: var(--muted); margin-top: 4px; letter-spa
 .btn:active { opacity: 0.75; }
 .btn.red    { border-color: #e84361; color: #e84361; }
 .btn.red:hover { background: #1e1018; }
-.btn.audio-on  { border-color: #3cb86a; color: #3cb86a; background: #0e1f14; }
+.btn.audio-on { border-color: #3cb86a; color: #3cb86a; background: #0e1f14; }
 .btn.audio-on:hover { background: #142a1a; }
 .btn.accent-outline { border-color: var(--accent); color: var(--accent); }
 .btn.accent-outline:hover { background: #221f10; }
 .btn.accent-outline:disabled { opacity: 0.3; cursor: not-allowed; border-color: var(--border); color: var(--muted); }
 .btn.accent-outline.strumming { background: #2a2210; border-color: #ffdd88; color: #ffdd88; }
 .btn.toggle-active { background: #1d2535; border-color: #6aadff; color: #6aadff; }
-.btn.muted-btn { color: var(--muted); font-size: 0.75rem; }
+/* Remove btn — muted, smaller, always last */
+.btn.remove-btn { color: var(--muted); font-size: 0.72rem; }
+.btn.remove-btn:hover { border-color: #e84361; color: #e84361; background: #1e1018; }
 
-/* ── Volume slider ───────────────────────────────────────── */
+/* ── Volume ───────────────────────────────────────────────── */
 .vol-wrap {
   display: flex; align-items: center; gap: 6px;
   background: var(--bg); border: 1px solid var(--border);
@@ -100,41 +101,43 @@ input[type=range].vol-slider::-moz-range-thumb {
 }
 .vol-pct { font-size: 0.68rem; color: var(--muted); width: 30px; text-align: right; }
 
-/* ── Root row ────────────────────────────────────────────── */
+/* ── Root row ─────────────────────────────────────────────── */
 .root-row {
   display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
   padding: 7px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
 }
 .root-row-label { font-size: 0.67rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-right: 2px; white-space: nowrap; }
 .root-pill {
-  font-family: 'IBM Plex Mono', monospace; font-size: 0.74rem; font-weight: 700;
-  padding: 3px 8px; border-radius: 20px; cursor: pointer; user-select: none;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px; cursor: pointer; user-select: none;
   border: 1px solid var(--border); background: transparent; color: var(--muted);
   transition: border-color 0.12s, background 0.12s, color 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
-.root-pill:hover     { border-color: var(--accent); color: var(--text); }
-.root-pill.in-chord  { border-color: #555; color: var(--text); }
-.root-pill.selected  { background: var(--accent); border-color: var(--accent); color: #111; }
+.root-pill:hover { border-color: var(--accent); color: var(--text); }
+.root-pill.in-chord { border-color: #555; color: var(--text); }
+.root-pill.selected { background: var(--accent); border-color: var(--accent); color: #111; }
 .root-pill.auto-pill { border-style: dashed; }
 .root-pill.auto-pill.selected { background: var(--surface); border-color: var(--accent); color: var(--accent); border-style: solid; }
 
-/* ── Status / hint ───────────────────────────────────────── */
+/* ── Status / hint ────────────────────────────────────────── */
 .status-bar {
   font-size: 0.8rem; color: var(--muted); line-height: 1.6;
-  padding: 9px 15px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 9px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
 }
-.status-bar .name { font-size: 0.98rem; color: var(--accent); font-weight: 700; display: block; }
+.status-bar .name { font-size: 0.95rem; color: var(--accent); font-weight: 700; display: block; }
 .status-bar .sub  { font-size: 0.68rem; color: var(--muted); }
 
 .hint {
   font-size: 0.7rem; color: var(--muted); border: 1px dashed var(--border);
-  border-radius: 5px; padding: 5px 12px; text-align: center;
+  border-radius: 5px; padding: 6px 14px; text-align: center;
 }
 .hint.on { border-color: var(--accent); color: var(--accent); }
 
-/* ── Fretboard ───────────────────────────────────────────── */
-.fb-scroll { width: 100%; overflow-x: auto; padding-bottom: 28px; padding-top: 24px; text-align: center; }
+/* ── Fretboard ────────────────────────────────────────────── */
+.fb-scroll {
+  width: 100%; overflow-x: auto; padding-bottom: 28px; padding-top: 24px; text-align: center;
+}
 @media (max-width: 900px) {
   .fb-scroll { overflow-x: hidden; }
   .fb-wrap   { transform-origin: top left; }
@@ -142,7 +145,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 .fb-wrap { display: inline-flex; flex-direction: column; }
 
 .fret-nums-row { display: flex; margin-left: 1px; margin-bottom: 5px; }
-.fret-num-cell { font-size: 0.62rem; color: var(--muted); text-align: center; flex-shrink: 0; user-select: none; }
+.fret-num-cell { font-size: 0.64rem; color: var(--muted); text-align: center; flex-shrink: 0; user-select: none; }
 
 .fretboard {
   background: #fff; border: 2px solid #c0c0c0; border-right: none; border-radius: 3px;
@@ -177,7 +180,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 .string-row[data-s="5"]::after { height: 0.8px; }
 
 .string-name {
-  width: 40px; text-align: center; font-size: 0.75rem; font-weight: 700; color: #888;
+  width: 40px; text-align: center; font-size: 0.78rem; font-weight: 700; color: #888;
   flex-shrink: 0; user-select: none; position: relative; z-index: 3; background: #fff;
   cursor: pointer; height: 46px; display: flex; align-items: center; justify-content: center;
   -webkit-tap-highlight-color: transparent;
@@ -195,19 +198,19 @@ input[type=range].vol-slider::-moz-range-thumb {
   position: absolute; left: 50%; transform: translateX(-50%);
   width: 9px; height: 9px; border-radius: 50%; background: rgba(0,0,0,0.13); pointer-events: none; z-index: 10;
 }
-.fret-marker.below       { bottom: 0; }
-.fret-marker.below.left  { bottom: 0; left: calc(50% - 8px); }
-.fret-marker.below.right { bottom: 0; left: calc(50% + 8px); }
-.fret-marker.above       { top: 0; }
-.fret-marker.above.left  { top: 0; left: calc(50% - 8px); }
-.fret-marker.above.right { top: 0; left: calc(50% + 8px); }
-.fret-marker.middle      { top: calc(100% - 3px); }
-.fret-marker.middle.left { top: calc(100% - 3px); left: calc(50% - 8px); }
-.fret-marker.middle.right{ top: calc(100% - 3px); left: calc(50% + 8px); }
+.fret-marker.below        { bottom: 0; }
+.fret-marker.below.left   { bottom: 0; left: calc(50% - 8px); }
+.fret-marker.below.right  { bottom: 0; left: calc(50% + 8px); }
+.fret-marker.above        { top: 0; }
+.fret-marker.above.left   { top: 0; left: calc(50% - 8px); }
+.fret-marker.above.right  { top: 0; left: calc(50% + 8px); }
+.fret-marker.middle       { top: calc(100% - 3px); }
+.fret-marker.middle.left  { top: calc(100% - 3px); left: calc(50% - 8px); }
+.fret-marker.middle.right { top: calc(100% - 3px); left: calc(50% + 8px); }
 
-/* ── Dots ────────────────────────────────────────────────── */
+/* ── Dots ─────────────────────────────────────────────────── */
 .dot {
-  width: 32px; height: 32px; border-radius: 50%;
+  width: 30px; height: 30px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.6rem; font-weight: 700; line-height: 1; text-align: center;
   position: relative; z-index: 7; white-space: nowrap; pointer-events: none;
@@ -226,31 +229,31 @@ input[type=range].vol-slider::-moz-range-thumb {
 .dot-g7 { background: var(--g7); border: 2px solid var(--g7b); color: #111; }
 .dot-g8 { background: var(--g8); border: 2px solid var(--g8b); color: #fff; }
 
-/* ── Legend & key ────────────────────────────────────────── */
+/* ── Legend & interval key ────────────────────────────────── */
 .legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--muted); }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--muted); }
 .legend-sw { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
 
-.interval-key { font-size: 0.68rem; color: var(--muted); text-align: center; line-height: 2.1; max-width: 700px; }
+.interval-key { font-size: 0.68rem; color: var(--muted); text-align: center; line-height: 2.2; max-width: 700px; }
 .interval-key b { color: #9ab4e8; }
 
-/* ── Add Chord ───────────────────────────────────────────── */
+/* ── Add Chord button ─────────────────────────────────────── */
 .add-chord-wrap { display: flex; justify-content: center; margin: 20px 0 8px; }
 .add-chord-btn {
   display: flex; align-items: center; gap: 8px;
-  padding: 11px 28px; border-radius: 8px; font-size: 0.88rem;
+  padding: 11px 28px; border-radius: 8px; font-size: 0.9rem;
   border: 1px dashed var(--accent); color: var(--accent); background: transparent;
   font-family: 'IBM Plex Mono', monospace; cursor: pointer; letter-spacing: 0.05em;
   transition: background 0.15s; -webkit-tap-highlight-color: transparent;
 }
 .add-chord-btn:hover { background: #221f10; }
 
-/* ── Mobile ──────────────────────────────────────────────── */
+/* ── Mobile ───────────────────────────────────────────────── */
 @media (max-width: 600px) {
   body { padding: 14px 8px 80px; }
   .chord-instance { padding: 12px 10px 16px; }
-  .btn { font-size: 0.78rem; padding: 6px 11px; }
-  .status-bar .name { font-size: 0.9rem; }
+  .btn { font-size: 0.76rem; padding: 6px 10px; }
+  .status-bar .name { font-size: 0.88rem; }
 }
 </style>
 </head>
@@ -271,7 +274,7 @@ input[type=range].vol-slider::-moz-range-thumb {
       <span class="vol-pct" id="globalVolPct">70%</span>
     </div>
   </div>
-  <span id="globalAudioHint"></span>
+  <span style="font-size:0.68rem;color:var(--muted);margin-left:4px;" id="globalAudioHint"></span>
 </div>
 
 <div class="chord-instances" id="chordInstances"></div>
@@ -280,7 +283,7 @@ input[type=range].vol-slider::-moz-range-thumb {
   <button class="add-chord-btn" onclick="addChordInstance()">＋ Add Chord</button>
 </div>
 
-<div style="display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:28px;width:100%;max-width:760px;">
+<div style="display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:28px;width:100%;max-width:740px;">
   <div class="legend">
     <div class="legend-item"><div class="legend-sw" style="background:#222;border:2px solid #888"></div>Your shape</div>
     <div class="legend-item"><div class="legend-sw" style="background:var(--g1)"></div>Inv 1</div>
@@ -299,12 +302,12 @@ input[type=range].vol-slider::-moz-range-thumb {
 </div>
 
 <script>
-// ─── CONSTANTS ───────────────────────────────────────────────────────────────
-const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const NUM_FRETS = 24, FRET_W = 44;
-const OPEN      = [4,9,2,7,11,4];
-const SNAMES    = ['E','A','D','G','B','e'];
-const OPEN_MIDI = [40,45,50,55,59,64];
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const NOTES      = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const NUM_FRETS  = 24, FRET_W = 44;
+const OPEN       = [4,9,2,7,11,4];
+const SNAMES     = ['E','A','D','G','B','e'];
+const OPEN_MIDI  = [40,45,50,55,59,64];
 const NUM_GROUPS = 9; // g0 = user shape, g1–g8 = inversions
 
 const CHORD_LIBRARY = [
@@ -363,30 +366,34 @@ function ksPluck(midi, string, when=0) {
   const ctx = getAudioCtx();
   const freq = midiToHz(midi);
   const sr = ctx.sampleRate;
-  const period = Math.round(sr/freq);
+  const period = Math.round(sr / freq);
   const noise = new Float32Array(period);
-  for (let i=0;i<period;i++)
-    noise[i] = string<=1 ? (Math.random()*2-1)*0.7+(i>0?noise[i-1]*0.3:0) : Math.random()*2-1;
+  for (let i=0;i<period;i++) {
+    noise[i] = string<=1
+      ? (Math.random()*2-1)*0.7+(i>0?noise[i-1]*0.3:0)
+      : Math.random()*2-1;
+  }
   const buf = noise.slice();
   let pos=0, sample=0, bodyPrev=0;
-  const damping = 0.990+(string/5)*0.007;
+  const damping  = 0.990+(string/5)*0.007;
   const bodyFreq = 120+string*60;
-  const total = Math.ceil(sr*(1.5+(string/5)*2.5));
-  const out = ctx.createBuffer(1,total,sr);
-  const d = out.getChannelData(0);
+  const total    = Math.ceil(sr*(1.5+(string/5)*2.5));
+  const out  = ctx.createBuffer(1,total,sr);
+  const data = out.getChannelData(0);
   for (let n=0;n<total;n++) {
     const nx=(pos+1)%period;
     sample = damping*0.5*(buf[pos]+buf[nx]);
     const ba=1-Math.exp(-2*Math.PI*bodyFreq/sr);
     bodyPrev+=ba*(sample-bodyPrev);
-    d[n]=sample+bodyPrev*0.08;
+    data[n]=sample+bodyPrev*0.08;
     buf[pos]=sample; pos=(pos+1)%period;
   }
   const fi=Math.min(64,total), fo=Math.min(Math.ceil(sr*0.04),total);
-  for(let i=0;i<fi;i++) d[i]*=i/fi;
-  for(let i=0;i<fo;i++) d[total-1-i]*=i/fo;
-  const src=ctx.createBufferSource(); src.buffer=out;
-  const eq=ctx.createBiquadFilter();
+  for(let i=0;i<fi;i++)  data[i]*=i/fi;
+  for(let i=0;i<fo;i++)  data[total-1-i]*=i/fo;
+  const src = ctx.createBufferSource();
+  src.buffer = out;
+  const eq = ctx.createBiquadFilter();
   if      (string<=1) { eq.type='lowshelf'; eq.frequency.value=200; eq.gain.value=3; }
   else if (string>=4) { eq.type='peaking';  eq.frequency.value=900; eq.gain.value=-2; eq.Q.value=0.8; }
   else                { eq.type='peaking';  eq.frequency.value=400; eq.gain.value=1;  eq.Q.value=1; }
@@ -407,12 +414,12 @@ function strumNotes(notes, btnEl) {
   }
 }
 
-// ─── GLOBAL AUDIO ────────────────────────────────────────────────────────────
+// ─── GLOBAL AUDIO ─────────────────────────────────────────────────────────────
 function toggleGlobalAudio() {
   audioEnabled = !audioEnabled;
-  const btn=document.getElementById('globalAudioBtn');
-  const volW=document.getElementById('globalVolWrap');
-  const hint=document.getElementById('globalAudioHint');
+  const btn  = document.getElementById('globalAudioBtn');
+  const volW = document.getElementById('globalVolWrap');
+  const hint = document.getElementById('globalAudioHint');
   if (audioEnabled) {
     btn.textContent='🔊 On'; btn.classList.add('audio-on');
     volW.style.opacity='1'; volW.style.pointerEvents='auto';
@@ -427,7 +434,7 @@ function toggleGlobalAudio() {
 }
 
 function onGlobalVolume(val) {
-  currentVolume=val/100;
+  currentVolume = val/100;
   document.getElementById('globalVolPct').textContent=val+'%';
   const pct=val+'%';
   document.getElementById('globalVolSlider').style.background=
@@ -436,7 +443,7 @@ function onGlobalVolume(val) {
 }
 window.addEventListener('load',()=>onGlobalVolume(70));
 
-// ─── CHORD DETECTION ─────────────────────────────────────────────────────────
+// ─── CHORD DETECTION ──────────────────────────────────────────────────────────
 function detectChord(pcs, forcedRoot=null) {
   const pcSet=[...new Set(pcs)];
   const n=pcSet.length;
@@ -456,98 +463,105 @@ function detectChord(pcs, forcedRoot=null) {
     return {root, name:pcSet.map(p=>NOTES[p]).join('/'), labelFor:pc=>genericLabel(((pc-root+12)%12))};
   }
   const {root,template:t}=best;
-  return {root, name:t.name, labelFor:pc=>{const iv=(pc-root+12)%12; return t.lb[iv]??genericLabel(iv);}};
+  return {root, name:t.name, labelFor:pc=>{ const iv=(pc-root+12)%12; return t.lb[iv]??genericLabel(iv); }};
 }
 
-// ─── CHORD INSTANCE ───────────────────────────────────────────────────────────
-// instanceCounter: monotonically increasing unique ID for DOM namespacing.
-// Display number is derived from position in the instances array — never from the ID.
-let instanceCounter=0;
-const instances=[];
+// ─── CHORD INSTANCE CLASS ──────────────────────────────────────────────────────
+// instanceCounter is a unique DOM-ID seed — it never decrements.
+// Display numbers (Chord 1, Chord 2 …) come from instances[] position,
+// refreshed by renumberInstances() after any add/remove.
+let instanceCounter = 0;
+const instances = [];
 
 class ChordInstance {
   constructor(id) {
-    this.id=id;                // unique, never reused, used for DOM IDs only
-    this.rootShape={};
-    this.displayDots={};       // key → { group, label, noteName }
-    this.rootOverride=null;
-    this.showNotes=false;
-    this.groupElements={};
+    this.id           = id;
+    this.rootShape    = {};
+    this.displayDots  = {};
+    this.rootOverride = null;
+    this.showNotes    = false;
+    this.groupElements= {};
   }
 
-  // Display number = 1-based position in the instances array (computed live)
-  get displayNum() { return instances.indexOf(this)+1; }
-
-  // ── Build DOM ──────────────────────────────────────────────
+  // ── DOM build ───────────────────────────────────────────────
   buildDOM() {
-    const wrap=document.createElement('div');
-    wrap.className='chord-instance'; wrap.id=`ci-${this.id}`;
+    const wrap = document.createElement('div');
+    wrap.className = 'chord-instance';
+    wrap.id = `ci-${this.id}`;
 
     // Header
-    const hdr=document.createElement('div');
-    hdr.className='chord-instance-header';
+    const hdr = document.createElement('div');
+    hdr.className = 'chord-instance-header';
 
-    const numLabel=document.createElement('span');
-    numLabel.className='chord-num'; numLabel.id=`chordNum-${this.id}`;
-    numLabel.textContent=`Chord ${this.displayNum}`;
-    hdr.appendChild(numLabel);
+    const numSpan = document.createElement('span');
+    numSpan.className = 'chord-num';
+    numSpan.id = `chordNum-${this.id}`;
+    numSpan.textContent = 'Chord —'; // will be set by renumberInstances
+    hdr.appendChild(numSpan);
 
-    const acts=document.createElement('div');
-    acts.className='instance-actions';
+    const acts = document.createElement('div');
+    acts.className = 'instance-actions';
+    acts.id = `acts-${this.id}`;
 
     // Label toggle
-    const lblBtn=document.createElement('button');
-    lblBtn.className='btn'; lblBtn.id=`lblBtn-${this.id}`;
-    lblBtn.textContent='♩ Intervals';
-    lblBtn.title='Toggle interval labels / note names';
-    lblBtn.addEventListener('click',()=>this.toggleLabelMode(lblBtn));
+    const lblBtn = document.createElement('button');
+    lblBtn.className = 'btn'; lblBtn.id = `lblBtn-${this.id}`;
+    lblBtn.textContent = '♩ Intervals';
+    lblBtn.title = 'Toggle interval labels / note names';
+    lblBtn.addEventListener('click', ()=>this.toggleLabelMode(lblBtn));
     acts.appendChild(lblBtn);
 
-    // Play
-    const playBtn=document.createElement('button');
-    playBtn.className='btn accent-outline'; playBtn.id=`playBtn-${this.id}`;
-    playBtn.textContent='▶ Play'; playBtn.disabled=!audioEnabled;
-    playBtn.addEventListener('click',()=>this.playChord());
+    // Play button
+    const playBtn = document.createElement('button');
+    playBtn.className = 'btn accent-outline'; playBtn.id = `playBtn-${this.id}`;
+    playBtn.textContent = '▶ Play'; playBtn.disabled = !audioEnabled;
+    playBtn.addEventListener('click', ()=>this.playChord());
     acts.appendChild(playBtn);
 
-    // Clear
-    const clearBtn=document.createElement('button');
-    clearBtn.className='btn red'; clearBtn.textContent='✕ Clear';
-    clearBtn.addEventListener('click',()=>this.clearAll());
+    // Clear button
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'btn red'; clearBtn.textContent = '✕ Clear';
+    clearBtn.addEventListener('click', ()=>this.clearAll());
     acts.appendChild(clearBtn);
 
-    // Remove — slot kept empty here; updateRemoveButtons() manages it exclusively
+    // Remove button — added/removed by updateRemoveButtons(), NOT here.
+    // This ensures there is always exactly one remove button per instance
+    // and it is never shown when only one chord exists.
+
     hdr.appendChild(acts);
     wrap.appendChild(hdr);
 
-    // Root row (hidden until 2+ notes)
-    const rootRow=document.createElement('div');
-    rootRow.className='root-row'; rootRow.id=`rootRow-${this.id}`;
-    rootRow.style.display='none';
+    // Root row (hidden until ≥2 notes)
+    const rootRow = document.createElement('div');
+    rootRow.className = 'root-row'; rootRow.id = `rootRow-${this.id}`;
+    rootRow.style.display = 'none';
     wrap.appendChild(rootRow);
 
     // Status bar
-    const sb=document.createElement('div');
-    sb.className='status-bar';
-    sb.innerHTML=`<span class="name" id="sName-${this.id}">Click frets to place your chord shape</span>`+
-                 `<span class="sub"  id="sSub-${this.id}">One note per string — inversions appear live</span>`;
+    const sb = document.createElement('div');
+    sb.className = 'status-bar';
+    sb.innerHTML =
+      `<span class="name" id="sName-${this.id}">Click frets to place your chord shape</span>` +
+      `<span class="sub"  id="sSub-${this.id}">One note per string — inversions appear live</span>`;
     wrap.appendChild(sb);
 
     // Hint
-    const hint=document.createElement('div');
-    hint.className='hint'; hint.id=`hint-${this.id}`;
-    hint.textContent='Click any fret to start placing notes';
+    const hint = document.createElement('div');
+    hint.className = 'hint'; hint.id = `hint-${this.id}`;
+    hint.textContent = 'Click any fret to start placing notes';
     wrap.appendChild(hint);
 
     // Fretboard
-    const fbScroll=document.createElement('div');
-    fbScroll.className='fb-scroll'; fbScroll.id=`fbScroll-${this.id}`;
-    const fbWrap=document.createElement('div');
-    fbWrap.className='fb-wrap'; fbWrap.id=`fbWrap-${this.id}`;
+    const fbScroll = document.createElement('div');
+    fbScroll.className = 'fb-scroll'; fbScroll.id = `fbScroll-${this.id}`;
+    const fbWrap = document.createElement('div');
+    fbWrap.className = 'fb-wrap'; fbWrap.id = `fbWrap-${this.id}`;
 
-    const fnRow=document.createElement('div'); fnRow.className='fret-nums-row';
-    const sp=document.createElement('div'); sp.style.cssText='width:40px;flex-shrink:0';
-    fnRow.appendChild(sp);
+    const fnRow = document.createElement('div');
+    fnRow.className = 'fret-nums-row';
+    const spacer = document.createElement('div');
+    spacer.style.cssText = 'width:40px;flex-shrink:0';
+    fnRow.appendChild(spacer);
     for (let f=1;f<=NUM_FRETS;f++) {
       const d=document.createElement('div');
       d.className='fret-num-cell'; d.style.width=FRET_W+'px'; d.textContent=f;
@@ -555,24 +569,27 @@ class ChordInstance {
     }
     fbWrap.appendChild(fnRow);
 
-    const fb=document.createElement('div'); fb.className='fretboard'; fb.id=`fb-${this.id}`;
+    const fb = document.createElement('div');
+    fb.className = 'fretboard'; fb.id = `fb-${this.id}`;
+
     for (let si=5;si>=0;si--) {
-      const row=document.createElement('div');
-      row.className='string-row'; row.dataset.s=si;
+      const row = document.createElement('div');
+      row.className = 'string-row'; row.dataset.s = si;
       if (si===5) row.classList.add('top-string');
       if (si===0) row.classList.add('bottom-string');
 
-      const nm=document.createElement('div');
-      nm.className='string-name'; nm.textContent=SNAMES[si]; nm.dataset.s=si;
-      nm.addEventListener('click',()=>this.toggleNote(si,0));
+      const nm = document.createElement('div');
+      nm.className = 'string-name'; nm.textContent = SNAMES[si]; nm.dataset.s = si;
+      nm.addEventListener('click', ()=>this.toggleNote(si,0));
       row.appendChild(nm);
 
       for (let f=1;f<=NUM_FRETS;f++) {
-        const cell=document.createElement('div');
-        cell.className='fret-cell'; cell.style.width=FRET_W+'px';
+        const cell = document.createElement('div');
+        cell.className = 'fret-cell'; cell.style.width = FRET_W+'px';
         if (f===1) cell.classList.add('nut');
         cell.dataset.s=si; cell.dataset.f=f;
-        cell.addEventListener('click',()=>this.toggleNote(si,f));
+        cell.addEventListener('click', ()=>this.toggleNote(si,f));
+
         if (si===5||si===3||si===0) {
           const pos=si===5?'above':si===3?'middle':'below';
           if (SINGLE_MARKER_FRETS.has(f)) {
@@ -585,13 +602,17 @@ class ChordInstance {
         }
         row.appendChild(cell);
       }
+
       if (si===5||si===0) {
-        const mask=document.createElement('div');
-        mask.style.cssText='position:absolute;width:4px;background:#fff;z-index:3;pointer-events:none;right:-2px;'+(si===5?'top:0;height:50%':'bottom:0;height:50%')+';';
+        const mask = document.createElement('div');
+        mask.style.cssText =
+          'position:absolute;width:4px;background:#fff;z-index:3;pointer-events:none;right:-2px;'+
+          (si===5?'top:0;height:50%':'bottom:0;height:50%')+';';
         row.appendChild(mask);
       }
       fb.appendChild(row);
     }
+
     fbWrap.appendChild(fb);
     fbScroll.appendChild(fbWrap);
     wrap.appendChild(fbScroll);
@@ -600,20 +621,23 @@ class ChordInstance {
     this.scaleFretboard();
   }
 
-  // ── Label mode ─────────────────────────────────────────────
+  // ── Label toggle ────────────────────────────────────────────
   toggleLabelMode(btn) {
-    this.showNotes=!this.showNotes;
-    btn.textContent=this.showNotes?'♩ Notes':'♩ Intervals';
-    btn.classList.toggle('toggle-active',this.showNotes);
+    this.showNotes = !this.showNotes;
+    btn.textContent = this.showNotes ? '♩ Notes' : '♩ Intervals';
+    btn.classList.toggle('toggle-active', this.showNotes);
     this.render();
   }
 
   // ── Note interaction ────────────────────────────────────────
   toggleNote(s,f) {
     const key=`${s}-${f}`;
-    if (this.rootShape[key]) { delete this.rootShape[key]; }
-    else {
-      for (const k of Object.keys(this.rootShape)) { if(+k.split('-')[0]===s) delete this.rootShape[k]; }
+    if (this.rootShape[key]) {
+      delete this.rootShape[key];
+    } else {
+      for (const k of Object.keys(this.rootShape)) {
+        if (+k.split('-')[0]===s) delete this.rootShape[k];
+      }
       this.rootShape[key]=true;
       playNoteKS(s,f,0);
     }
@@ -629,21 +653,23 @@ class ChordInstance {
   }
 
   remove() {
-    const el=document.getElementById(`ci-${this.id}`); if(el) el.remove();
-    const idx=instances.indexOf(this); if(idx>=0) instances.splice(idx,1);
-    // Refresh numbering and remove buttons for remaining instances
-    syncInstanceLabels();
+    const el=document.getElementById(`ci-${this.id}`);
+    if (el) el.remove();
+    const idx=instances.indexOf(this);
+    if (idx>=0) instances.splice(idx,1);
+    // Refresh numbering and remove-button visibility for remaining instances
+    renumberInstances();
     updateRemoveButtons();
   }
 
-  // ── Root row ───────────────────────────────────────────────
+  // ── Root row ────────────────────────────────────────────────
   buildRootRow(chordPCs) {
     const row=document.getElementById(`rootRow-${this.id}`);
     row.innerHTML='<span class="root-row-label">Root</span>';
     const auto=document.createElement('span');
     auto.className='root-pill auto-pill'+(this.rootOverride===null?' selected':'');
     auto.textContent='Auto';
-    auto.addEventListener('click',()=>{this.rootOverride=null;this.computeAndDisplay();});
+    auto.addEventListener('click',()=>{ this.rootOverride=null; this.computeAndDisplay(); });
     row.appendChild(auto);
     const inSet=new Set(chordPCs);
     for (let pc=0;pc<12;pc++) {
@@ -651,108 +677,114 @@ class ChordInstance {
       pill.className='root-pill'+(inSet.has(pc)?' in-chord':'')+(this.rootOverride===pc?' selected':'');
       pill.textContent=NOTES[pc];
       const cap=pc;
-      pill.addEventListener('click',()=>{this.rootOverride=cap;this.computeAndDisplay();});
+      pill.addEventListener('click',()=>{ this.rootOverride=cap; this.computeAndDisplay(); });
       row.appendChild(pill);
     }
     row.style.display='flex';
   }
   hideRootRow() { document.getElementById(`rootRow-${this.id}`).style.display='none'; }
 
-  // ── Play ───────────────────────────────────────────────────
+  // ── Playback ────────────────────────────────────────────────
   playChord() {
     const keys=Object.keys(this.rootShape);
-    if(!keys.length||!audioEnabled) return;
-    const notes=keys.map(k=>{const[s,f]=k.split('-').map(Number);return{s,f};}).sort((a,b)=>a.s-b.s);
-    strumNotes(notes,document.getElementById(`playBtn-${this.id}`));
+    if (!keys.length||!audioEnabled) return;
+    const notes=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return{s,f}; }).sort((a,b)=>a.s-b.s);
+    strumNotes(notes, document.getElementById(`playBtn-${this.id}`));
   }
 
   playInversion(groupId) {
-    if(!audioEnabled) return;
+    if (!audioEnabled) return;
     const notes=[];
     for (const[key,val] of Object.entries(this.displayDots)) {
-      if(val.group===groupId){const[s,f]=key.split('-').map(Number);notes.push({s,f});}
+      if (val.group===groupId) { const[s,f]=key.split('-').map(Number); notes.push({s,f}); }
     }
-    strumNotes(notes.sort((a,b)=>a.s-b.s),null);
+    notes.sort((a,b)=>a.s-b.s);
+    strumNotes(notes,null);
   }
 
-  // ── Compute & display ──────────────────────────────────────
+  // ── Compute ─────────────────────────────────────────────────
   computeAndDisplay() {
     const keys=Object.keys(this.rootShape);
     const pb=document.getElementById(`playBtn-${this.id}`);
-    if(pb) pb.disabled=!audioEnabled;
+    if (pb) pb.disabled=!audioEnabled;
 
-    if(keys.length===0){
+    if (keys.length===0) {
       this.displayDots={}; this.render(); this.hideRootRow();
       document.getElementById(`sName-${this.id}`).textContent='Click frets to place your chord shape';
       document.getElementById(`sSub-${this.id}`).textContent='One note per string — inversions appear live';
-      this.setHint('Click any fret to start',false); return;
+      this.setHint('Click any fret to start',false);
+      return;
     }
 
-    // Render placed notes as group 0 while computing
+    // Show single-note state
     this.displayDots={};
-    for(const k of keys){
+    for (const k of keys) {
       const[s,f]=k.split('-').map(Number);
-      this.displayDots[k]={group:0,label:NOTES[noteAt(s,f)],noteName:NOTES[noteAt(s,f)]};
+      this.displayDots[k]={group:0, label:NOTES[noteAt(s,f)], noteName:NOTES[noteAt(s,f)]};
     }
     this.render();
 
-    if(keys.length===1){
+    if (keys.length===1) {
       const[s,f]=keys[0].split('-').map(Number);
       document.getElementById(`sName-${this.id}`).textContent=NOTES[noteAt(s,f)];
       document.getElementById(`sSub-${this.id}`).textContent='Add more notes — 2+ needed to detect chord';
-      this.setHint('Keep placing notes...',false); this.hideRootRow(); return;
+      this.setHint('Keep placing notes…',false);
+      this.hideRootRow();
+      return;
     }
 
-    const playedPCs=[...new Set(keys.map(k=>{const[s,f]=k.split('-').map(Number);return noteAt(s,f);}))];
+    const playedPCs=[...new Set(keys.map(k=>{ const[s,f]=k.split('-').map(Number); return noteAt(s,f); }))];
     this.buildRootRow(playedPCs);
-    const{root,name,labelFor}=detectChord(playedPCs,this.rootOverride);
+
+    const {root,name,labelFor}=detectChord(playedPCs,this.rootOverride);
     const usedStrings=[...new Set(keys.map(k=>+k.split('-')[0]))].sort((a,b)=>a-b);
 
     const optsByString={};
-    for(const s of usedStrings){
+    for (const s of usedStrings) {
       optsByString[s]=[];
-      for(let f=0;f<=NUM_FRETS;f++){
+      for (let f=0;f<=NUM_FRETS;f++) {
         const pc=noteAt(s,f);
-        if(playedPCs.includes(pc)) optsByString[s].push({f,pc,label:labelFor(pc)});
+        if (playedPCs.includes(pc)) optsByString[s].push({f,pc,label:labelFor(pc)});
       }
     }
 
     const allV=[];
-    (function rec(idx,chosen){
-      if(idx===usedStrings.length){
+    (function rec(idx,chosen) {
+      if (idx===usedStrings.length) {
         const cov=new Set(chosen.map(c=>c.pc));
-        if(playedPCs.every(pc=>cov.has(pc))) allV.push([...chosen]);
+        if (playedPCs.every(pc=>cov.has(pc))) allV.push([...chosen]);
         return;
       }
-      for(const opt of optsByString[usedStrings[idx]]) rec(idx+1,[...chosen,{s:usedStrings[idx],...opt}]);
+      for (const opt of optsByString[usedStrings[idx]]) rec(idx+1,[...chosen,{s:usedStrings[idx],...opt}]);
     })(0,[]);
 
-    const seen=new Set(),unique=[];
-    for(const v of allV){
+    const seen=new Set(), unique=[];
+    for (const v of allV) {
       const sig=v.map(n=>`${n.s}:${n.f}`).sort().join('|');
-      if(!seen.has(sig)){seen.add(sig);unique.push(v);}
+      if (!seen.has(sig)) { seen.add(sig); unique.push(v); }
     }
     unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
-    const rootSig=keys.map(k=>{const[s,f]=k.split('-').map(Number);return`${s}:${f}`;}).sort().join('|');
+    const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
     let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
-    if(rootIdx<0) rootIdx=0;
+    if (rootIdx<0) rootIdx=0;
 
     const ordered=[...unique.slice(rootIdx),...unique.slice(0,rootIdx)];
-    const selV=[],occ=new Set();
-    for(const voicing of ordered){
+    const selV=[], occ=new Set();
+    for (const voicing of ordered) {
       const cells=voicing.map(n=>`${n.s}-${n.f}`);
-      if(cells.every(c=>!occ.has(c))){
-        selV.push({voicing,group:selV.length%NUM_GROUPS});
+      if (cells.every(c=>!occ.has(c))) {
+        selV.push({voicing, group:selV.length%NUM_GROUPS});
         cells.forEach(c=>occ.add(c));
       }
     }
 
     this.displayDots={};
-    for(const{voicing,group}of selV)
-      for(const n of voicing) this.displayDots[`${n.s}-${n.f}`]={group,label:labelFor(n.pc),noteName:NOTES[n.pc]};
+    for (const{voicing,group}of selV)
+      for (const n of voicing)
+        this.displayDots[`${n.s}-${n.f}`]={group, label:labelFor(n.pc), noteName:NOTES[n.pc]};
 
-    const rootName=NOTES[root],lock=this.rootOverride!==null;
+    const rootName=NOTES[root], lock=this.rootOverride!==null;
     document.getElementById(`sName-${this.id}`).textContent=`${rootName} ${name}${lock?' ✎':''}`;
     document.getElementById(`sSub-${this.id}`).textContent=
       `Strings: ${usedStrings.map(s=>SNAMES[s]).join(' ')} · ${unique.length} voicings · ${selV.length} shown`+
@@ -764,66 +796,74 @@ class ChordInstance {
     this.render();
   }
 
-  // ── Render ─────────────────────────────────────────────────
+  // ── Render ──────────────────────────────────────────────────
   render() {
-    const fb=document.getElementById(`fb-${this.id}`); if(!fb) return;
+    const fb=document.getElementById(`fb-${this.id}`);
+    if (!fb) return;
     fb.querySelectorAll('.dot').forEach(d=>d.remove());
-    fb.querySelectorAll('.string-name').forEach(nm=>{nm.style.color='';nm.style.fontWeight='';});
+    fb.querySelectorAll('.string-name').forEach(nm=>{ nm.style.color=''; nm.style.fontWeight=''; });
     this.groupElements={};
 
-    for(const[key,{group,label,noteName}]of Object.entries(this.displayDots)){
+    for (const[key,{group,label,noteName}]of Object.entries(this.displayDots)) {
       const[s,f]=key.split('-').map(Number);
       const displayLabel=this.showNotes?(noteName||NOTES[noteAt(s,f)]):label;
-      const dot=document.createElement('div');
-      dot.className=`dot dot-g${group}`; dot.textContent=displayLabel; dot.dataset.group=group;
 
-      if(audioEnabled&&group>0){
+      const dot=document.createElement('div');
+      dot.className=`dot dot-g${group}`;
+      dot.textContent=displayLabel;
+      dot.dataset.group=group;
+
+      if (audioEnabled&&group>0) {
         dot.classList.add('inv-clickable');
         dot.addEventListener('click',e=>{
-          e.stopPropagation(); this.playInversion(group);
+          e.stopPropagation();
+          this.playInversion(group);
           (this.groupElements[group]||new Set()).forEach(el=>{
             el.style.transform='scale(1.2)';
-            setTimeout(()=>{el.style.transform='';},180);
+            setTimeout(()=>{ el.style.transform=''; },180);
           });
         });
         dot.addEventListener('mouseenter',()=>this.highlightGroup(group,true));
         dot.addEventListener('mouseleave',()=>this.highlightGroup(group,false));
       }
 
-      if(f===0){
-        const nm=fb.querySelector(`.string-name[data-s="${s}"]`); if(!nm) continue;
+      if (f===0) {
+        const nm=fb.querySelector(`.string-name[data-s="${s}"]`);
+        if (!nm) continue;
         nm.textContent=''; nm.appendChild(dot);
       } else {
-        const cell=fb.querySelector(`.fret-cell[data-s="${s}"][data-f="${f}"]`); if(!cell) continue;
+        const cell=fb.querySelector(`.fret-cell[data-s="${s}"][data-f="${f}"]`);
+        if (!cell) continue;
         cell.appendChild(dot);
       }
-      if(!this.groupElements[group]) this.groupElements[group]=new Set();
+      if (!this.groupElements[group]) this.groupElements[group]=new Set();
       this.groupElements[group].add(dot);
     }
+
     fb.querySelectorAll('.string-name').forEach(nm=>{
-      if(!nm.querySelector('.dot')) nm.textContent=SNAMES[+nm.dataset.s];
+      if (!nm.querySelector('.dot')) nm.textContent=SNAMES[+nm.dataset.s];
     });
   }
 
   highlightGroup(groupId,on) {
     (this.groupElements[groupId]||new Set()).forEach(dot=>{
-      const p=dot.parentElement; if(!p) return;
-      if(on) p.classList.add('inv-hover'); else p.classList.remove('inv-hover');
+      const p=dot.parentElement; if (!p) return;
+      if (on) p.classList.add('inv-hover'); else p.classList.remove('inv-hover');
     });
   }
 
   setHint(msg,on) {
     const h=document.getElementById(`hint-${this.id}`);
-    if(h){h.textContent=msg;h.className='hint'+(on?' on':'');}
+    if (h) { h.textContent=msg; h.className='hint'+(on?' on':''); }
   }
 
   scaleFretboard() {
-    const wrap=document.getElementById(`fbWrap-${this.id}`);
+    const wrap  =document.getElementById(`fbWrap-${this.id}`);
     const scroll=document.getElementById(`fbScroll-${this.id}`);
-    if(!wrap||!scroll) return;
+    if (!wrap||!scroll) return;
     wrap.style.transform=''; wrap.style.marginBottom='';
     const nat=wrap.scrollWidth, avail=scroll.clientWidth;
-    if(avail<nat){
+    if (avail<nat) {
       const sc=avail/nat;
       wrap.style.transform=`scale(${sc})`;
       wrap.style.transformOrigin='top left';
@@ -832,54 +872,58 @@ class ChordInstance {
   }
 }
 
-// ─── INSTANCE MANAGEMENT ─────────────────────────────────────────────────────
+// ─── INSTANCE MANAGEMENT ──────────────────────────────────────────────────────
+
+/**
+ * Renumber displayed "Chord N" labels based on current position in instances[].
+ * This keeps labels sequential even after deletions.
+ */
+function renumberInstances() {
+  instances.forEach((inst, idx)=>{
+    const el=document.getElementById(`chordNum-${inst.id}`);
+    if (el) el.textContent=`Chord ${idx+1}`;
+  });
+}
+
+/**
+ * Sync remove buttons across all instances.
+ * Rules:
+ *   - Only ONE remove button per instance (keyed by data-role="remove").
+ *   - Remove buttons are shown only when instances.length > 1.
+ *   - We remove old ones and rebuild to keep event listeners fresh.
+ */
+function updateRemoveButtons() {
+  instances.forEach(inst=>{
+    const acts=document.getElementById(`acts-${inst.id}`);
+    if (!acts) return;
+    // Remove any existing remove buttons
+    acts.querySelectorAll('[data-role="remove"]').forEach(b=>b.remove());
+    // Add one only when 2+ instances exist
+    if (instances.length>1) {
+      const rmBtn=document.createElement('button');
+      rmBtn.className='btn remove-btn';
+      rmBtn.textContent='⊗ Remove';
+      rmBtn.dataset.role='remove';
+      rmBtn.addEventListener('click',()=>inst.remove());
+      acts.appendChild(rmBtn);
+    }
+  });
+}
 
 function addChordInstance() {
   instanceCounter++;
   const inst=new ChordInstance(instanceCounter);
   instances.push(inst);
   inst.buildDOM();
+  // Set correct number label before first render
+  renumberInstances();
+  updateRemoveButtons();
   inst.computeAndDisplay();
   inst.scaleFretboard();
-  // updateRemoveButtons must run after instance is in the array and DOM is ready
-  updateRemoveButtons();
   setTimeout(()=>{
     const el=document.getElementById(`ci-${inst.id}`);
-    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
   },100);
-}
-
-/**
- * Sync the "Chord N" label on every instance to reflect current array positions.
- * Called after any remove so numbering stays sequential (1, 2, 3…).
- */
-function syncInstanceLabels() {
-  instances.forEach((inst,idx)=>{
-    const el=document.getElementById(`chordNum-${inst.id}`);
-    if(el) el.textContent=`Chord ${idx+1}`;
-  });
-}
-
-/**
- * The single source of truth for Remove buttons.
- * Removes any existing Remove button from every instance, then adds one
- * only when there are 2+ instances. This function is called after every
- * add or remove — never inside buildDOM().
- */
-function updateRemoveButtons() {
-  instances.forEach(inst=>{
-    const acts=document.querySelector(`#ci-${inst.id} .instance-actions`);
-    if(!acts) return;
-    // Remove any existing Remove button
-    acts.querySelectorAll('[data-role="remove"]').forEach(b=>b.remove());
-    // Add one only if multiple instances exist
-    if(instances.length>1){
-      const rmBtn=document.createElement('button');
-      rmBtn.className='btn muted-btn'; rmBtn.textContent='⊗ Remove'; rmBtn.dataset.role='remove';
-      rmBtn.addEventListener('click',()=>inst.remove());
-      acts.appendChild(rmBtn);
-    }
-  });
 }
 
 window.addEventListener('resize',()=>instances.forEach(inst=>inst.scaleFretboard()));
