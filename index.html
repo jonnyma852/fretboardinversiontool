@@ -26,72 +26,80 @@ body {
   background: var(--bg); color: var(--text);
   font-family: 'IBM Plex Mono', monospace; min-height: 100vh;
   display: flex; flex-direction: column; align-items: center;
-  padding: 16px 12px 60px; gap: 0;
+  padding: 10px 12px 50px; gap: 0;
 }
 
-/* ── Header — single compact line ───────────────────────── */
+/* ── Header — one compact line ───────────────────────────── */
 header {
   display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
-  justify-content: center; margin-bottom: 12px;
+  justify-content: center; margin-bottom: 8px;
 }
-header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
-header p  { font-size: 0.85rem; color: var(--muted); letter-spacing: 0.03em; }
+header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+header p  { font-size: 1.06rem; color: var(--muted); letter-spacing: 0.03em; }
 
-/* ── Global audio bar ───────────────────────────────────── */
+/* ── Global audio bar ────────────────────────────────────── */
 .global-controls {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center;
-  padding: 7px 14px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 8px; margin-bottom: 12px; width: 100%; max-width: 800px;
+  padding: 6px 14px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; margin-bottom: 8px; width: 100%; max-width: 860px;
 }
-.gc-label { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-#globalAudioHint { font-size: 0.78rem; color: var(--muted); margin-left: 2px; }
+.gc-label { font-size: 1.0rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+#globalAudioHint { font-size: 0.975rem; color: var(--muted); margin-left: 2px; }
 
 /* ── Chord instances ─────────────────────────────────────── */
-.chord-instances { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; }
+.chord-instances { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
 
 .chord-instance {
   width: 100%; max-width: 1200px;
   background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 7px;
+  padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 6px;
 }
 
-/* ── Instance header row: [Chord N] ··· [buttons] ────────── */
+/* ── Row 1: [Chord N] ···················· [buttons] ─────── */
 .chord-instance-header {
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;
 }
 .chord-num {
-  font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+  font-size: 1.0rem; letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--muted); padding: 2px 10px; border: 1px solid var(--border); border-radius: 4px;
   white-space: nowrap;
 }
 .instance-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
-/* ── Inline info bar: chord name + root pills on one row ─── */
-/* Hidden until ≥2 notes placed (managed by JS) */
+/* ── Row 2: info-bar — chord name + root pills + sub-status ─ */
+/* All on ONE row. Hidden until ≥2 notes placed. */
 .info-bar {
-  display: none; /* JS sets to flex when active */
-  align-items: center; flex-wrap: wrap; gap: 6px;
+  display: none; /* JS sets to flex */
+  align-items: center; flex-wrap: wrap; gap: 5px;
   background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
   padding: 5px 10px;
 }
-/* Chord name portion of the info bar */
 .info-chord-name {
-  font-size: 1.05rem; font-weight: 700; color: var(--accent);
+  font-size: 1.31rem; font-weight: 700; color: var(--accent);
   white-space: nowrap; flex-shrink: 0;
 }
-/* Thin vertical divider between name and root pills */
 .info-divider {
-  width: 1px; height: 18px; background: var(--border); flex-shrink: 0;
-  align-self: center; margin: 0 2px;
+  width: 1px; height: 20px; background: var(--border); flex-shrink: 0;
+  align-self: center; margin: 0 3px;
 }
-/* Root label */
 .root-row-label {
-  font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 0.94rem; letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--muted); white-space: nowrap; flex-shrink: 0;
 }
-/* Root pills */
+/* Sub-status text lives at the right end of the info-bar */
+.info-sub {
+  font-size: 0.875rem; color: var(--muted);
+  margin-left: auto; white-space: nowrap; padding-left: 8px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+/* On narrow screens, sub wraps to new line */
+@media (max-width: 700px) {
+  .info-sub { margin-left: 0; width: 100%; }
+}
+
+/* ── Root pills ──────────────────────────────────────────── */
 .root-pill {
-  font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace; font-size: 1.025rem; font-weight: 700;
   padding: 2px 8px; border-radius: 20px; cursor: pointer; user-select: none;
   border: 1px solid var(--border); background: transparent; color: var(--muted);
   transition: border-color 0.12s, background 0.12s, color 0.12s;
@@ -103,31 +111,18 @@ header p  { font-size: 0.85rem; color: var(--muted); letter-spacing: 0.03em; }
 .root-pill.auto-pill { border-style: dashed; }
 .root-pill.auto-pill.selected { background: var(--surface); border-color: var(--accent); color: var(--accent); border-style: solid; }
 
-/* ── Sub-status: compact single line of metadata ─────────── */
-.status-sub {
-  font-size: 0.75rem; color: var(--muted); padding: 3px 10px;
-  background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-/* Before any notes placed — full status shown as one line */
+/* ── Empty / single-note placeholder ─────────────────────── */
 .status-empty {
-  font-size: 0.88rem; color: var(--muted);
-  padding: 6px 12px; background: var(--bg); border: 1px solid var(--border);
+  font-size: 1.1rem; color: var(--muted);
+  padding: 5px 12px; background: var(--bg); border: 1px solid var(--border);
   border-radius: 6px; text-align: center;
 }
-
-/* ── Hint line (inline, small) ───────────────────────────── */
-.hint {
-  font-size: 0.78rem; color: var(--muted); border: 1px dashed var(--border);
-  border-radius: 5px; padding: 4px 12px; text-align: center;
-}
-.hint.on { border-color: var(--accent); color: var(--accent); }
 
 /* ── Buttons ─────────────────────────────────────────────── */
 .btn {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
   padding: 6px 13px; border-radius: 5px; font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.88rem; cursor: pointer; white-space: nowrap;
+  font-size: 1.1rem; cursor: pointer; white-space: nowrap;
   transition: border-color 0.15s, background 0.15s, opacity 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -142,7 +137,7 @@ header p  { font-size: 0.85rem; color: var(--muted); letter-spacing: 0.03em; }
 .btn.accent-outline:disabled { opacity: 0.3; cursor: not-allowed; border-color: var(--border); color: var(--muted); }
 .btn.accent-outline.strumming { background: #2a2210; border-color: #ffdd88; color: #ffdd88; }
 .btn.toggle-active { background: #1d2535; border-color: #6aadff; color: #6aadff; }
-.btn.remove-btn { color: var(--muted); font-size: 0.78rem; }
+.btn.remove-btn { color: var(--muted); font-size: 0.975rem; }
 .btn.remove-btn:hover { border-color: #e84361; color: #e84361; background: #1e1018; }
 
 /* ── Volume slider ───────────────────────────────────────── */
@@ -162,11 +157,11 @@ input[type=range].vol-slider::-webkit-slider-thumb {
 input[type=range].vol-slider::-moz-range-thumb {
   width: 15px; height: 15px; border-radius: 50%; border: none; background: var(--accent); cursor: pointer;
 }
-.vol-pct { font-size: 0.78rem; color: var(--muted); width: 32px; text-align: right; }
+.vol-pct { font-size: 0.975rem; color: var(--muted); width: 36px; text-align: right; }
 
 /* ── Fretboard ───────────────────────────────────────────── */
 .fb-scroll {
-  width: 100%; overflow-x: auto; padding-bottom: 14px; padding-top: 12px; text-align: center;
+  width: 100%; overflow-x: auto; padding-bottom: 8px; padding-top: 6px; text-align: center;
 }
 @media (max-width: 900px) {
   .fb-scroll { overflow-x: hidden; }
@@ -175,7 +170,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 .fb-wrap { display: inline-flex; flex-direction: column; }
 
 .fret-nums-row { display: flex; margin-left: 1px; margin-bottom: 4px; }
-.fret-num-cell { font-size: 0.7rem; color: var(--muted); text-align: center; flex-shrink: 0; user-select: none; }
+.fret-num-cell { font-size: 0.875rem; color: var(--muted); text-align: center; flex-shrink: 0; user-select: none; }
 
 .fretboard {
   background: #fff; border: 2px solid #c0c0c0; border-right: none; border-radius: 3px;
@@ -210,7 +205,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 .string-row[data-s="5"]::after { height: 0.8px; }
 
 .string-name {
-  width: 40px; text-align: center; font-size: 0.85rem; font-weight: 700; color: #888;
+  width: 40px; text-align: center; font-size: 1.06rem; font-weight: 700; color: #888;
   flex-shrink: 0; user-select: none; position: relative; z-index: 3; background: #fff;
   cursor: pointer; height: 46px; display: flex; align-items: center; justify-content: center;
   -webkit-tap-highlight-color: transparent;
@@ -242,7 +237,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 .dot {
   width: 30px; height: 30px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.62rem; font-weight: 700; line-height: 1; text-align: center;
+  font-size: 0.775rem; font-weight: 700; line-height: 1; text-align: center;
   position: relative; z-index: 7; white-space: nowrap; pointer-events: none;
   transition: transform 0.1s, box-shadow 0.1s;
 }
@@ -261,17 +256,17 @@ input[type=range].vol-slider::-moz-range-thumb {
 
 /* ── Legend & interval key ───────────────────────────────── */
 .legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.82rem; color: var(--muted); }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 1.025rem; color: var(--muted); }
 .legend-sw { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
 
-.interval-key { font-size: 0.78rem; color: var(--muted); text-align: center; line-height: 2.1; max-width: 720px; }
+.interval-key { font-size: 0.975rem; color: var(--muted); text-align: center; line-height: 2.1; max-width: 760px; }
 .interval-key b { color: #9ab4e8; }
 
 /* ── Add Chord button ────────────────────────────────────── */
-.add-chord-wrap { display: flex; justify-content: center; margin: 16px 0 6px; }
+.add-chord-wrap { display: flex; justify-content: center; margin: 12px 0 4px; }
 .add-chord-btn {
   display: flex; align-items: center; gap: 8px;
-  padding: 9px 26px; border-radius: 8px; font-size: 0.95rem;
+  padding: 8px 26px; border-radius: 8px; font-size: 1.19rem;
   border: 1px dashed var(--accent); color: var(--accent); background: transparent;
   font-family: 'IBM Plex Mono', monospace; cursor: pointer; letter-spacing: 0.05em;
   transition: background 0.15s; -webkit-tap-highlight-color: transparent;
@@ -280,11 +275,12 @@ input[type=range].vol-slider::-moz-range-thumb {
 
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  body { padding: 10px 8px 60px; }
-  .chord-instance { padding: 10px 9px 12px; }
-  .btn { font-size: 0.82rem; padding: 5px 9px; }
-  header h1 { font-size: 1.1rem; }
-  header p  { font-size: 0.78rem; }
+  body { padding: 8px 8px 50px; }
+  .chord-instance { padding: 8px 10px 10px; }
+  .btn { font-size: 1.0rem; padding: 5px 9px; }
+  header h1 { font-size: 1.3rem; }
+  header p  { font-size: 0.9rem; }
+  .info-chord-name { font-size: 1.15rem; }
 }
 </style>
 </head>
@@ -300,7 +296,7 @@ input[type=range].vol-slider::-moz-range-thumb {
   <button class="btn" id="globalAudioBtn" onclick="toggleGlobalAudio()">🔇 Off</button>
   <div id="globalVolWrap" style="opacity:0.35;pointer-events:none;transition:opacity 0.2s;">
     <div class="vol-wrap">
-      <span style="font-size:0.95rem;">🔈</span>
+      <span style="font-size:1.1rem;">🔈</span>
       <input type="range" class="vol-slider" id="globalVolSlider" min="0" max="100" value="70" oninput="onGlobalVolume(this.value)">
       <span class="vol-pct" id="globalVolPct">70%</span>
     </div>
@@ -314,7 +310,7 @@ input[type=range].vol-slider::-moz-range-thumb {
   <button class="add-chord-btn" onclick="addChordInstance()">＋ Add Chord</button>
 </div>
 
-<div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:22px;width:100%;max-width:760px;">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:18px;width:100%;max-width:800px;">
   <div class="legend">
     <div class="legend-item"><div class="legend-sw" style="background:#222;border:2px solid #888"></div>Your shape</div>
     <div class="legend-item"><div class="legend-sw" style="background:var(--g1)"></div>Inv 1</div>
@@ -339,7 +335,7 @@ const NUM_FRETS  = 24, FRET_W = 44;
 const OPEN       = [4,9,2,7,11,4];
 const SNAMES     = ['E','A','D','G','B','e'];
 const OPEN_MIDI  = [40,45,50,55,59,64];
-const NUM_GROUPS = 9; // g0=user shape, g1–g8=inversions
+const NUM_GROUPS = 9;
 
 const CHORD_LIBRARY = [
   { ivs:[0,4,7],      name:'Major',       lb:{0:'R',4:'△3',7:'p5'} },
@@ -368,42 +364,42 @@ const CHORD_LIBRARY = [
   { ivs:[0,3,7,2],    name:'Min Add9',    lb:{0:'R',2:'9',3:'m3',7:'p5'} },
 ];
 
-function genericLabel(iv) {
+function genericLabel(iv){
   return ({0:'R',1:'b2',2:'2',3:'m3',4:'△3',5:'4',6:'b5',7:'p5',8:'#5',9:'6',10:'m7',11:'△7'})[iv]??String(iv);
 }
 
 const SINGLE_MARKER_FRETS = new Set([3,5,7,9,15,17,19,21]);
 const DOUBLE_MARKER_FRETS  = new Set([12,24]);
 
-function noteAt(s,f) { return (OPEN[s]+f)%12; }
-function midiToHz(m) { return 440*Math.pow(2,(m-69)/12); }
+function noteAt(s,f){ return (OPEN[s]+f)%12; }
+function midiToHz(m){ return 440*Math.pow(2,(m-69)/12); }
 
-// ─── AUDIO: KARPLUS-STRONG ────────────────────────────────────────────────────
+// ─── AUDIO ────────────────────────────────────────────────────────────────────
 let audioCtx=null, masterGain=null;
 let audioEnabled=false, currentVolume=0.70;
 
-function getAudioCtx() {
-  if (!audioCtx) {
+function getAudioCtx(){
+  if(!audioCtx){
     audioCtx=new (window.AudioContext||window.webkitAudioContext)();
     masterGain=audioCtx.createGain();
     masterGain.gain.value=currentVolume;
     masterGain.connect(audioCtx.destination);
   }
-  if (audioCtx.state==='suspended') audioCtx.resume();
+  if(audioCtx.state==='suspended') audioCtx.resume();
   return audioCtx;
 }
 
-function ksPluck(midi, string, when=0) {
-  const ctx=getAudioCtx(), freq=midiToHz(midi), sr=ctx.sampleRate;
+function ksPluck(midi,string,when=0){
+  const ctx=getAudioCtx(),freq=midiToHz(midi),sr=ctx.sampleRate;
   const period=Math.round(sr/freq);
   const noise=new Float32Array(period);
-  for (let i=0;i<period;i++)
+  for(let i=0;i<period;i++)
     noise[i]=string<=1?(Math.random()*2-1)*0.7+(i>0?noise[i-1]*0.3:0):Math.random()*2-1;
   const buf=noise.slice(); let pos=0,sample=0,bodyPrev=0;
   const damping=0.990+(string/5)*0.007, bodyFreq=120+string*60;
   const total=Math.ceil(sr*(1.5+(string/5)*2.5));
   const out=ctx.createBuffer(1,total,sr), d=out.getChannelData(0);
-  for (let n=0;n<total;n++) {
+  for(let n=0;n<total;n++){
     const nx=(pos+1)%period;
     sample=damping*0.5*(buf[pos]+buf[nx]);
     const ba=1-Math.exp(-2*Math.PI*bodyFreq/sr);
@@ -415,9 +411,9 @@ function ksPluck(midi, string, when=0) {
   for(let i=0;i<fo;i++) d[total-1-i]*=i/fo;
   const src=ctx.createBufferSource(); src.buffer=out;
   const eq=ctx.createBiquadFilter();
-  if      (string<=1){eq.type='lowshelf';eq.frequency.value=200;eq.gain.value=3;}
-  else if (string>=4){eq.type='peaking';eq.frequency.value=900;eq.gain.value=-2;eq.Q.value=0.8;}
-  else               {eq.type='peaking';eq.frequency.value=400;eq.gain.value=1;eq.Q.value=1;}
+  if(string<=1){eq.type='lowshelf';eq.frequency.value=200;eq.gain.value=3;}
+  else if(string>=4){eq.type='peaking';eq.frequency.value=900;eq.gain.value=-2;eq.Q.value=0.8;}
+  else{eq.type='peaking';eq.frequency.value=400;eq.gain.value=1;eq.Q.value=1;}
   src.connect(eq); eq.connect(masterGain);
   src.start(ctx.currentTime+when);
 }
@@ -425,7 +421,7 @@ function ksPluck(midi, string, when=0) {
 function playNoteKS(s,f,when=0){if(audioEnabled) ksPluck(OPEN_MIDI[s]+f,s,when);}
 
 const STRUM=0.032;
-function strumNotes(notes,btnEl) {
+function strumNotes(notes,btnEl){
   if(!audioEnabled) return;
   notes.forEach((n,i)=>playNoteKS(n.s,n.f,i*STRUM));
   if(btnEl){
@@ -435,8 +431,8 @@ function strumNotes(notes,btnEl) {
   }
 }
 
-// ─── GLOBAL AUDIO ─────────────────────────────────────────────────────────────
-function toggleGlobalAudio() {
+// ─── GLOBAL AUDIO CONTROLS ────────────────────────────────────────────────────
+function toggleGlobalAudio(){
   audioEnabled=!audioEnabled;
   const btn=document.getElementById('globalAudioBtn');
   const volW=document.getElementById('globalVolWrap');
@@ -454,7 +450,7 @@ function toggleGlobalAudio() {
   instances.forEach(inst=>inst.render());
 }
 
-function onGlobalVolume(val) {
+function onGlobalVolume(val){
   currentVolume=val/100;
   document.getElementById('globalVolPct').textContent=val+'%';
   const pct=val+'%';
@@ -465,16 +461,16 @@ function onGlobalVolume(val) {
 window.addEventListener('load',()=>onGlobalVolume(70));
 
 // ─── CHORD DETECTION ──────────────────────────────────────────────────────────
-function detectChord(pcs, forcedRoot=null) {
-  const pcSet=[...new Set(pcs)]; const n=pcSet.length;
+function detectChord(pcs,forcedRoot=null){
+  const pcSet=[...new Set(pcs)];
   const roots=forcedRoot!==null?[forcedRoot]:Array.from({length:12},(_,i)=>i);
-  let best=null, bestScore=-1;
+  let best=null,bestScore=-1;
   for(const r of roots){
     const ivs=pcSet.map(pc=>((pc-r+12)%12)).sort((a,b)=>a-b);
     for(const t of CHORD_LIBRARY){
       const tSet=new Set(t.ivs),iSet=new Set(ivs);
       if(!ivs.every(i=>tSet.has(i))) continue;
-      const score=t.ivs.filter(i=>iSet.has(i)).length+(t.ivs.length===n?10:0);
+      const score=t.ivs.filter(i=>iSet.has(i)).length+(t.ivs.length===pcSet.length?10:0);
       if(score>bestScore){bestScore=score;best={root:r,template:t};}
     }
   }
@@ -487,10 +483,12 @@ function detectChord(pcs, forcedRoot=null) {
 }
 
 // ─── CHORD INSTANCE ────────────────────────────────────────────────────────────
+// instanceCounter = unique DOM-ID seed, never decrements.
+// Display numbers come from position in instances[], refreshed by renumberInstances().
 let instanceCounter=0;
 const instances=[];
 
-class ChordInstance {
+class ChordInstance{
   constructor(id){
     this.id=id;
     this.rootShape={};
@@ -500,12 +498,11 @@ class ChordInstance {
     this.groupElements={};
   }
 
-  // ── Build DOM ──────────────────────────────────────────────
   buildDOM(){
     const wrap=document.createElement('div');
     wrap.className='chord-instance'; wrap.id=`ci-${this.id}`;
 
-    // Header: [Chord N label]  ···  [action buttons]
+    // ── Row 1: header ──────────────────────────────────────
     const hdr=document.createElement('div');
     hdr.className='chord-instance-header';
 
@@ -539,45 +536,42 @@ class ChordInstance {
     hdr.appendChild(acts);
     wrap.appendChild(hdr);
 
-    // ── Info bar: chord name + root selector on one row ──────
-    // Structure: [chord name] | Root [Auto][C][C#]…[B]  [sub-status text]
+    // ── Row 2: info-bar (chord name + root pills + sub-status) ──
+    // All on one row. Shown only when ≥2 notes placed.
     const infoBar=document.createElement('div');
     infoBar.className='info-bar'; infoBar.id=`infoBar-${this.id}`;
 
-    const chordNameEl=document.createElement('span');
-    chordNameEl.className='info-chord-name'; chordNameEl.id=`sName-${this.id}`;
-    chordNameEl.textContent='';
-    infoBar.appendChild(chordNameEl);
+    const nameEl=document.createElement('span');
+    nameEl.className='info-chord-name'; nameEl.id=`sName-${this.id}`;
+    infoBar.appendChild(nameEl);
 
-    const divider=document.createElement('div');
-    divider.className='info-divider';
-    infoBar.appendChild(divider);
+    const div=document.createElement('div'); div.className='info-divider';
+    infoBar.appendChild(div);
 
-    // Root label + pills container (will be populated by buildRootRow)
-    const rootLabel=document.createElement('span');
-    rootLabel.className='root-row-label'; rootLabel.textContent='Root';
-    infoBar.appendChild(rootLabel);
+    const rootLbl=document.createElement('span');
+    rootLbl.className='root-row-label'; rootLbl.textContent='Root';
+    infoBar.appendChild(rootLbl);
 
+    // Pills container — display:contents so pills flow inline
     const pillsWrap=document.createElement('div');
     pillsWrap.id=`rootPills-${this.id}`;
-    pillsWrap.style.cssText='display:contents;'; // pills flow inline with infoBar flex
+    pillsWrap.style.cssText='display:contents;';
     infoBar.appendChild(pillsWrap);
+
+    // Sub-status text pushed to the right
+    const subEl=document.createElement('span');
+    subEl.className='info-sub'; subEl.id=`sSub-${this.id}`;
+    infoBar.appendChild(subEl);
 
     wrap.appendChild(infoBar);
 
-    // ── Sub-status line (voicing metadata + hint) ────────────
-    const subStatus=document.createElement('div');
-    subStatus.className='status-sub'; subStatus.id=`sSub-${this.id}`;
-    subStatus.style.display='none';
-    wrap.appendChild(subStatus);
+    // ── Empty / single-note state ──────────────────────────
+    const emptyEl=document.createElement('div');
+    emptyEl.className='status-empty'; emptyEl.id=`emptyState-${this.id}`;
+    emptyEl.textContent='Click any fret to start placing notes';
+    wrap.appendChild(emptyEl);
 
-    // ── Empty state placeholder ──────────────────────────────
-    const emptyState=document.createElement('div');
-    emptyState.className='status-empty'; emptyState.id=`emptyState-${this.id}`;
-    emptyState.textContent='Click any fret to start placing notes';
-    wrap.appendChild(emptyState);
-
-    // Fretboard
+    // ── Fretboard ──────────────────────────────────────────
     const fbScroll=document.createElement('div');
     fbScroll.className='fb-scroll'; fbScroll.id=`fbScroll-${this.id}`;
     const fbWrap=document.createElement('div');
@@ -650,7 +644,7 @@ class ChordInstance {
   toggleNote(s,f){
     const key=`${s}-${f}`;
     if(this.rootShape[key]){ delete this.rootShape[key]; }
-    else {
+    else{
       for(const k of Object.keys(this.rootShape)){ if(+k.split('-')[0]===s) delete this.rootShape[k]; }
       this.rootShape[key]=true;
       playNoteKS(s,f,0);
@@ -673,7 +667,7 @@ class ChordInstance {
     updateRemoveButtons();
   }
 
-  // ── Info bar helpers ──────────────────────────────────────
+  // ── State helpers ─────────────────────────────────────────
   _showInfoBar(){
     const bar=document.getElementById(`infoBar-${this.id}`);
     if(bar) bar.style.display='flex';
@@ -683,20 +677,15 @@ class ChordInstance {
   _hideInfoBar(){
     const bar=document.getElementById(`infoBar-${this.id}`);
     if(bar) bar.style.display='none';
-    const sub=document.getElementById(`sSub-${this.id}`);
-    if(sub) sub.style.display='none';
   }
   _showEmpty(msg){
     const empty=document.getElementById(`emptyState-${this.id}`);
     if(empty){ empty.textContent=msg; empty.style.display='block'; }
-    const bar=document.getElementById(`infoBar-${this.id}`);
-    if(bar) bar.style.display='none';
-    const sub=document.getElementById(`sSub-${this.id}`);
-    if(sub) sub.style.display='none';
+    this._hideInfoBar();
   }
 
-  // ── Root pills (built into the info bar's pillsWrap) ──────
-  buildRootRow(chordPCs){
+  // ── Root pills ────────────────────────────────────────────
+  _buildRootPills(chordPCs){
     const wrap=document.getElementById(`rootPills-${this.id}`);
     if(!wrap) return;
     wrap.innerHTML='';
@@ -716,7 +705,6 @@ class ChordInstance {
       pill.addEventListener('click',()=>{this.rootOverride=cap;this.computeAndDisplay();});
       wrap.appendChild(pill);
     }
-    this._showInfoBar();
   }
 
   // ── Playback ──────────────────────────────────────────────
@@ -748,6 +736,7 @@ class ChordInstance {
       return;
     }
 
+    // Render placed notes immediately as group-0 while computing
     this.displayDots={};
     for(const k of keys){
       const[s,f]=k.split('-').map(Number);
@@ -811,26 +800,23 @@ class ChordInstance {
         this.displayDots[`${n.s}-${n.f}`]={group,label:labelFor(n.pc),noteName:NOTES[n.pc]};
 
     const rootName=NOTES[root], lock=this.rootOverride!==null;
-    const chordLabel=`${rootName} ${name}${lock?' ✎':''}`;
 
-    // Update chord name in info bar
+    // Update chord name
     const nameEl=document.getElementById(`sName-${this.id}`);
-    if(nameEl) nameEl.textContent=chordLabel;
+    if(nameEl) nameEl.textContent=`${rootName} ${name}${lock?' ✎':''}`;
 
-    // Build root pills
-    this.buildRootRow(playedPCs);
+    // Rebuild root pills
+    this._buildRootPills(playedPCs);
 
-    // Sub-status line: strings · voicing count · hint
+    // Sub-status — inline at end of info-bar
     const hintText=lock
-      ?`✎ root locked to ${rootName} — click Auto to release`
-      :`${audioEnabled?'click dot to hear inversions':'enable audio to hear'}`;
+      ?`✎ locked to ${rootName} · click Auto to release`
+      :(audioEnabled?'click inversion dot to hear':'enable audio to play');
     const subEl=document.getElementById(`sSub-${this.id}`);
-    if(subEl){
-      subEl.textContent=
-        `Strings: ${usedStrings.map(s=>SNAMES[s]).join(' ')} · ${unique.length} voicings · ${selV.length} shown · ${hintText}`;
-      subEl.style.display='block';
-    }
+    if(subEl) subEl.textContent=
+      `${usedStrings.map(s=>SNAMES[s]).join('')} · ${unique.length} voicings · ${selV.length} shown · ${hintText}`;
 
+    this._showInfoBar();
     this.render();
   }
 
