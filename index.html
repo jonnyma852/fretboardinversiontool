@@ -758,13 +758,35 @@ class ChordInstance{
       const sig=v.map(n=>`${n.s}:${n.f}`).sort().join('|');
       if(!seen.has(sig)){seen.add(sig);unique.push(v);}
     }
-    unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
-    const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
-    let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
-    if(rootIdx<0) rootIdx=0;
+    // ── Compute root shape's median fret for proximity sorting ──────────────
+    // This is the single fix: instead of sorting all voicings by minimum fret
+    // (which causes low-fret voicings to crowd out high-neck inversions when
+    // the root shape is high on the neck), we sort every voicing by how close
+    // its median fret is to the root shape's median fret. This keeps all
+    // inversion groups clustered near wherever the user actually played.
+    const rootFrets = keys.map(k => +k.split('-')[1]);
+    const rootMedian = rootFrets.reduce((a,b)=>a+b,0) / rootFrets.length;
 
-    const ordered=[...unique.slice(rootIdx),...unique.slice(0,rootIdx)];
+    function voicingMedian(v){ return v.reduce((a,n)=>a+n.f,0)/v.length; }
+    function voicingDist(v){ return Math.abs(voicingMedian(v) - rootMedian); }
+
+    // Separate the exact root voicing so it always goes first as group 0
+    const rootSig = keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
+    const rootVoicingIdx = unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
+
+    // Pull root out; sort the rest by proximity to root median fret
+    let rootVoicing = null;
+    let others = unique.slice();
+    if(rootVoicingIdx >= 0){
+      rootVoicing = others.splice(rootVoicingIdx, 1)[0];
+    }
+    others.sort((a,b) => voicingDist(a) - voicingDist(b));
+
+    // Rebuild ordered with root first, then closest inversions
+    const ordered = rootVoicing ? [rootVoicing, ...others] : others;
+
+    // Same greedy cell-occupation pass as before — unchanged
     const selV=[],occ=new Set();
     for(const voicing of ordered){
       const cells=voicing.map(n=>`${n.s}-${n.f}`);
