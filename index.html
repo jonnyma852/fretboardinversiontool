@@ -286,8 +286,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 
 <script>
 const NOTES      = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-// Fret 24 = same pitch as open strings (octave repeat) — excluded to prevent
-// duplicate voicings that corrupt inversion grouping logic.
+// Fret 24 = same pitch as open (wrap-around). Excluded to avoid duplicate voicings.
 const NUM_FRETS  = 23, FRET_W = 44;
 const OPEN       = [4,9,2,7,11,4];
 const SNAMES     = ['E','A','D','G','B','e'];
@@ -326,7 +325,7 @@ function genericLabel(iv){
 }
 
 const SINGLE_MARKER_FRETS = new Set([3,5,7,9,15,17,19,21]);
-const DOUBLE_MARKER_FRETS  = new Set([12]); // 24 removed — same pitch as open
+const DOUBLE_MARKER_FRETS  = new Set([12]);
 
 function noteAt(s,f){ return (OPEN[s]+f)%12; }
 function midiToHz(m){ return 440*Math.pow(2,(m-69)/12); }
@@ -638,19 +637,17 @@ class ChordInstance{
     const{root,name,labelFor}=detectChord(playedPCs,this.rootOverride);
     const usedStrings=[...new Set(keys.map(k=>+k.split('-')[0]))].sort((a,b)=>a-b);
 
+    // Build all fret positions per string that match a chord tone
     const optsByString={};
     for(const s of usedStrings){
       optsByString[s]=[];
-      // f=1..NUM_FRETS only — open strings (f=0) handled separately, fret 24 excluded
-      for(let f=1;f<=NUM_FRETS;f++){
+      for(let f=0;f<=NUM_FRETS;f++){
         const pc=noteAt(s,f);
         if(playedPCs.includes(pc)) optsByString[s].push({f,pc,label:labelFor(pc)});
       }
-      // Also include open string (f=0) if it matches
-      const openPc=noteAt(s,0);
-      if(playedPCs.includes(openPc)) optsByString[s].unshift({f:0,pc:openPc,label:labelFor(openPc)});
     }
 
+    // Generate all voicings (one note per string, all chord tones covered)
     const allV=[];
     (function rec(idx,chosen){
       if(idx===usedStrings.length){
@@ -661,52 +658,75 @@ class ChordInstance{
       for(const opt of optsByString[usedStrings[idx]]) rec(idx+1,[...chosen,{s:usedStrings[idx],...opt}]);
     })(0,[]);
 
-    const seen=new Set(),unique=[];
+    // Deduplicate by exact cell positions
+    const seen=new Set(), unique=[];
     for(const v of allV){
       const sig=v.map(n=>`${n.s}:${n.f}`).sort().join('|');
       if(!seen.has(sig)){seen.add(sig);unique.push(v);}
     }
 
-    // Sort all voicings by min fret ascending
-    unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
+    if(unique.length===0){ this.render(); return; }
 
-    const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
-    let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
-    if(rootIdx<0) rootIdx=0;
+    // ── CLUSTER-BASED GROUPING ───────────────────────────────────────────────
+    // Sort voicings by their median fret position (more stable than min for
+    // chords where notes span different ranges per voicing).
+    // Then cluster consecutive voicings that are within GAP frets of each other.
+    // Each cluster = one inversion group.
+    // The cluster containing the user's root shape = group 0 (black).
+    // Clusters to the right (higher fret) = g1, g2, g3…
+    // Clusters to the left (lower fret), ascending = g(n), g(n+1)…
+    // This mirrors how a guitarist thinks about inversions on the neck.
 
-    const after  = unique.slice(rootIdx + 1);
-    const before = unique.slice(0, rootIdx);
+    const median = v => {
+      const fs = v.map(n=>n.f).sort((a,b)=>a-b);
+      const mid = Math.floor(fs.length/2);
+      return fs.length%2 ? fs[mid] : (fs[mid-1]+fs[mid])/2;
+    };
 
-    // Pass 1: root (g0) + after (g1, g2…) with shared occ
-    const selV=[];
-    const occAfter=new Set();
-    for(const k of keys) occAfter.add(k);
-    selV.push({voicing: unique[rootIdx], group: 0});
+    unique.sort((a,b) => median(a) - median(b));
 
-    for(const voicing of after){
-      const cells=voicing.map(n=>`${n.s}-${n.f}`);
-      if(cells.every(c=>!occAfter.has(c))){
-        selV.push({voicing, group: selV.length % NUM_GROUPS});
-        cells.forEach(c=>occAfter.add(c));
+    // Cluster by gap between consecutive medians
+    const GAP = 4; // frets — gap larger than this = new cluster
+    const clusters = [];
+    let cur = [unique[0]];
+    for(let i=1;i<unique.length;i++){
+      if(median(unique[i]) - median(unique[i-1]) > GAP){
+        clusters.push(cur);
+        cur = [];
       }
+      cur.push(unique[i]);
     }
+    clusters.push(cur);
 
-    // Pass 2: before with its own fresh occ (independent of after zone)
-    const occBefore=new Set();
-    for(const k of keys) occBefore.add(k);
+    // Find which cluster contains the user's root shape
+    const rootSig = keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
+    let rootClusterIdx = clusters.findIndex(cl =>
+      cl.some(v => v.map(n=>`${n.s}:${n.f}`).sort().join('|') === rootSig)
+    );
+    if(rootClusterIdx < 0) rootClusterIdx = 0;
 
-    for(const voicing of before){
-      const cells=voicing.map(n=>`${n.s}-${n.f}`);
-      if(cells.every(c=>!occBefore.has(c))){
-        selV.push({voicing, group: selV.length % NUM_GROUPS});
-        cells.forEach(c=>occBefore.add(c));
+    // Reorder clusters: [root, ...after, ...before]
+    // after = clusters with higher fret (to the right), ascending
+    // before = clusters with lower fret (to the left), ascending (lowest = next group)
+    const after  = clusters.slice(rootClusterIdx + 1);
+    const before = clusters.slice(0, rootClusterIdx);
+    const ordered = [clusters[rootClusterIdx], ...after, ...before];
+
+    // Assign group numbers: root cluster = 0, then 1, 2, 3…
+    this.displayDots = {};
+    ordered.forEach((cluster, gi) => {
+      const group = gi % NUM_GROUPS;
+      for(const voicing of cluster){
+        for(const n of voicing){
+          const key = `${n.s}-${n.f}`;
+          // A cell might appear in multiple voicings in the same cluster (same
+          // fret position, different voicing combinations). Only write once.
+          if(!this.displayDots[key]){
+            this.displayDots[key] = {group, label:labelFor(n.pc), noteName:NOTES[n.pc]};
+          }
+        }
       }
-    }
-
-    this.displayDots={};
-    for(const{voicing,group} of selV)
-      for(const n of voicing)
-        this.displayDots[`${n.s}-${n.f}`]={group, label:labelFor(n.pc), noteName:NOTES[n.pc]};
+    });
 
     const rootName=NOTES[root], lock=this.rootOverride!==null;
     const nameEl=document.getElementById(`sName-${this.id}`);
