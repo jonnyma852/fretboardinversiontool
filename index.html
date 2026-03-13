@@ -759,34 +759,43 @@ class ChordInstance{
       if(!seen.has(sig)){seen.add(sig);unique.push(v);}
     }
 
-    // ── Compute root shape's median fret for proximity sorting ──────────────
-    // This is the single fix: instead of sorting all voicings by minimum fret
-    // (which causes low-fret voicings to crowd out high-neck inversions when
-    // the root shape is high on the neck), we sort every voicing by how close
-    // its median fret is to the root shape's median fret. This keeps all
-    // inversion groups clustered near wherever the user actually played.
-    const rootFrets = keys.map(k => +k.split('-')[1]);
-    const rootMedian = rootFrets.reduce((a,b)=>a+b,0) / rootFrets.length;
+    // ── Sort & order voicings ─────────────────────────────────────────────────
+    //
+    // Original approach: sort all by min-fret ascending, then rotate so the
+    // root shape is first. This gave correct groupings for low-neck shapes but
+    // broke for high-neck shapes because voicings that "wrapped" to the end of
+    // the array (lower frets than root) had their cells already claimed by the
+    // inversions that came before them in the rotated order.
+    //
+    // Fix: sort by min-fret as before (preserves the grouping identity that was
+    // correct), find rootIdx, then build `ordered` as:
+    //   [root] + [voicings AFTER root in fret order] + [voicings BEFORE root, sorted by proximity to root median]
+    //
+    // The "before" slice is re-sorted by proximity rather than just appended raw,
+    // so they compete for cells in proximity order and render cleanly near the
+    // root neck position instead of all failing because early slots were taken.
+    //
+    unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
-    function voicingMedian(v){ return v.reduce((a,n)=>a+n.f,0)/v.length; }
-    function voicingDist(v){ return Math.abs(voicingMedian(v) - rootMedian); }
+    const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
+    let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
+    if(rootIdx<0) rootIdx=0;
 
-    // Separate the exact root voicing so it always goes first as group 0
-    const rootSig = keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
-    const rootVoicingIdx = unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
+    // Voicings above (higher fret) the root — keep original ascending fret order
+    const after  = unique.slice(rootIdx+1);
+    // Voicings below (lower fret) the root — sort by proximity to root median fret
+    const before = unique.slice(0, rootIdx);
+    const rootFrets  = keys.map(k=>+k.split('-')[1]);
+    const rootMedian = rootFrets.reduce((a,b)=>a+b,0)/rootFrets.length;
+    before.sort((a,b)=>{
+      const dA=Math.abs(a.reduce((s,n)=>s+n.f,0)/a.length - rootMedian);
+      const dB=Math.abs(b.reduce((s,n)=>s+n.f,0)/b.length - rootMedian);
+      return dA-dB;
+    });
 
-    // Pull root out; sort the rest by proximity to root median fret
-    let rootVoicing = null;
-    let others = unique.slice();
-    if(rootVoicingIdx >= 0){
-      rootVoicing = others.splice(rootVoicingIdx, 1)[0];
-    }
-    others.sort((a,b) => voicingDist(a) - voicingDist(b));
+    const ordered=[unique[rootIdx], ...after, ...before];
 
-    // Rebuild ordered with root first, then closest inversions
-    const ordered = rootVoicing ? [rootVoicing, ...others] : others;
-
-    // Same greedy cell-occupation pass as before — unchanged
+    // Greedy cell-occupation pass — unchanged from original
     const selV=[],occ=new Set();
     for(const voicing of ordered){
       const cells=voicing.map(n=>`${n.s}-${n.f}`);
