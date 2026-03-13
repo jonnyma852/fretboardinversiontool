@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Fretboard · Inversion Tool</title>
+<title>Fretboard Inversion Tool</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,6 +40,7 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
   border-radius: 8px; margin-bottom: 8px; width: 100%; max-width: 860px;
 }
 .gc-label { font-size: 1.0rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.gc-divider { width: 1px; height: 22px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
 
 /* ── Chord instances ─────────────────────────────────────── */
 .chord-instances { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
@@ -52,10 +53,8 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
 
 /*
  * ── The single chord bar ──────────────────────────────────
- * One flex row with 3 zones:
+ * One flex row:
  *   [chord-name LEFT] [root-zone CENTER] [btn-zone RIGHT]
- *
- * Hidden until ≥2 notes placed; empty-state shown instead.
  */
 .chord-bar {
   display: none; /* JS sets to flex when ≥2 notes placed */
@@ -63,17 +62,17 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
   gap: 8px;
   background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
   padding: 6px 10px;
-  flex-wrap: wrap; /* graceful on narrow screens */
+  flex-wrap: wrap;
 }
 
 /* Left zone: chord name */
 .chord-bar-name {
   font-size: 1.31rem; font-weight: 700; color: var(--accent);
   white-space: nowrap; flex-shrink: 0;
-  min-width: 120px; /* prevent collapse */
+  min-width: 120px;
 }
 
-/* Spacer pushes root zone to true center, buttons to far right */
+/* Spacer */
 .chord-bar-spacer { flex: 1; }
 
 /* Center zone: Root label + pills */
@@ -92,7 +91,6 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
   flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
 }
 
-/* On very narrow screens, each zone stacks */
 @media (max-width: 680px) {
   .chord-bar { flex-direction: column; align-items: stretch; }
   .chord-bar-name { min-width: unset; }
@@ -288,7 +286,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 <body>
 
 <header>
-  <h1>🎸 Fretboard · Inversion Tool</h1>
+  <h1>Fretboard Inversion Tool</h1>
 </header>
 
 <div class="global-controls">
@@ -301,6 +299,8 @@ input[type=range].vol-slider::-moz-range-thumb {
       <span class="vol-pct" id="globalVolPct">70%</span>
     </div>
   </div>
+  <div class="gc-divider"></div>
+  <button class="btn" id="globalNotesBtn" onclick="toggleGlobalNotes()">♩ Intervals</button>
 </div>
 
 <div class="chord-instances" id="chordInstances"></div>
@@ -456,6 +456,22 @@ function onGlobalVolume(val){
 }
 window.addEventListener('load',()=>onGlobalVolume(70));
 
+// ─── GLOBAL NOTES/INTERVALS TOGGLE ────────────────────────────────────────────
+let globalShowNotes = false;
+
+function toggleGlobalNotes(){
+  globalShowNotes = !globalShowNotes;
+  const btn = document.getElementById('globalNotesBtn');
+  if(globalShowNotes){
+    btn.textContent = '♩ Notes';
+    btn.classList.add('toggle-active');
+  } else {
+    btn.textContent = '♩ Intervals';
+    btn.classList.remove('toggle-active');
+  }
+  instances.forEach(inst => inst.render());
+}
+
 // ─── CHORD DETECTION ──────────────────────────────────────────────────────────
 function detectChord(pcs,forcedRoot=null){
   const pcSet=[...new Set(pcs)];
@@ -488,7 +504,6 @@ class ChordInstance{
     this.rootShape={};
     this.displayDots={};
     this.rootOverride=null;
-    this.showNotes=false;
     this.groupElements={};
   }
 
@@ -496,12 +511,6 @@ class ChordInstance{
     const wrap=document.createElement('div');
     wrap.className='chord-instance'; wrap.id=`ci-${this.id}`;
 
-    /*
-     * Single chord bar — one flex row, 3 zones:
-     *   [name LEFT] [spacer] [root CENTER] [spacer] [buttons RIGHT]
-     *
-     * Hidden until ≥2 notes placed; empty-state shown instead.
-     */
     const bar=document.createElement('div');
     bar.className='chord-bar'; bar.id=`chordBar-${this.id}`;
 
@@ -533,15 +542,9 @@ class ChordInstance{
     const sp2=document.createElement('div'); sp2.className='chord-bar-spacer';
     bar.appendChild(sp2);
 
-    // RIGHT: action buttons
+    // RIGHT: action buttons (Play, Clear — Remove added by updateRemoveButtons)
     const btns=document.createElement('div');
     btns.className='chord-bar-btns'; btns.id=`acts-${this.id}`;
-
-    const lblBtn=document.createElement('button');
-    lblBtn.className='btn'; lblBtn.id=`lblBtn-${this.id}`;
-    lblBtn.textContent='♩ Intervals';
-    lblBtn.addEventListener('click',()=>this.toggleLabelMode(lblBtn));
-    btns.appendChild(lblBtn);
 
     const playBtn=document.createElement('button');
     playBtn.className='btn accent-outline'; playBtn.id=`playBtn-${this.id}`;
@@ -554,11 +557,10 @@ class ChordInstance{
     clearBtn.addEventListener('click',()=>this.clearAll());
     btns.appendChild(clearBtn);
 
-    // Remove button — managed by updateRemoveButtons()
     bar.appendChild(btns);
     wrap.appendChild(bar);
 
-    // Empty / single-note state (shown when chord-bar is hidden)
+    // Empty / single-note state
     const emptyEl=document.createElement('div');
     emptyEl.className='status-empty'; emptyEl.id=`emptyState-${this.id}`;
     emptyEl.textContent='Click any fret to start placing notes';
@@ -623,14 +625,6 @@ class ChordInstance{
 
     document.getElementById('chordInstances').appendChild(wrap);
     this.scaleFretboard();
-  }
-
-  // ── Label toggle ──────────────────────────────────────────
-  toggleLabelMode(btn){
-    this.showNotes=!this.showNotes;
-    btn.textContent=this.showNotes?'♩ Notes':'♩ Intervals';
-    btn.classList.toggle('toggle-active',this.showNotes);
-    this.render();
   }
 
   // ── Note interaction ──────────────────────────────────────
@@ -749,6 +743,7 @@ class ChordInstance{
     const{root,name,labelFor}=detectChord(playedPCs,this.rootOverride);
     const usedStrings=[...new Set(keys.map(k=>+k.split('-')[0]))].sort((a,b)=>a-b);
 
+    // Build all possible fret options for each string (covering the played pitch classes)
     const optsByString={};
     for(const s of usedStrings){
       optsByString[s]=[];
@@ -758,6 +753,7 @@ class ChordInstance{
       }
     }
 
+    // Enumerate all valid voicings (one note per string, covering all pitch classes)
     const allV=[];
     (function rec(idx,chosen){
       if(idx===usedStrings.length){
@@ -768,31 +764,110 @@ class ChordInstance{
       for(const opt of optsByString[usedStrings[idx]]) rec(idx+1,[...chosen,{s:usedStrings[idx],...opt}]);
     })(0,[]);
 
+    // Deduplicate by exact fret positions
     const seen=new Set(),unique=[];
     for(const v of allV){
       const sig=v.map(n=>`${n.s}:${n.f}`).sort().join('|');
       if(!seen.has(sig)){seen.add(sig);unique.push(v);}
     }
-    unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
-    const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
-    let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
-    if(rootIdx<0) rootIdx=0;
+    /*
+     * ── INVERSION GROUPING (the key fix) ──────────────────────────────────────
+     *
+     * A "voicing shape" is defined by the pitch class assigned to each string,
+     * NOT by fret numbers. Two voicings that play the same note on each string
+     * (just in different octaves / fret positions) are the SAME inversion group —
+     * they are octave-equivalent positions of each other.
+     *
+     * Algorithm:
+     *  1. Build a "pc-pattern" signature: string→pc sorted by string index, e.g. "0:4|1:9|2:2"
+     *  2. Group all voicings by this signature.
+     *  3. The user's input shape is group 0. Each distinct pc-pattern gets its own group number.
+     *  4. Within each group, pick the voicing closest to the user's shape (by fret proximity)
+     *     as the displayed representative — this prevents wrapping artifacts.
+     */
 
-    const ordered=[...unique.slice(rootIdx),...unique.slice(0,rootIdx)];
-    const selV=[],occ=new Set();
-    for(const voicing of ordered){
-      const cells=voicing.map(n=>`${n.s}-${n.f}`);
-      if(cells.every(c=>!occ.has(c))){
-        selV.push({voicing,group:selV.length%NUM_GROUPS});
-        cells.forEach(c=>occ.add(c));
-      }
+    // User's root shape pc-pattern
+    const rootPCPattern = usedStrings.map(s=>{
+      const key = Object.keys(this.rootShape).find(k=>+k.split('-')[0]===s);
+      const f = key ? +key.split('-')[1] : 0;
+      return `${s}:${noteAt(s,f)}`;
+    }).join('|');
+
+    // Compute median fret of root shape (used for proximity scoring)
+    const rootFrets = usedStrings.map(s=>{
+      const key = Object.keys(this.rootShape).find(k=>+k.split('-')[0]===s);
+      return key ? +key.split('-')[1] : 0;
+    });
+    const rootMedianFret = rootFrets.reduce((a,b)=>a+b,0)/rootFrets.length;
+
+    // Group voicings by pc-pattern
+    const pcPatternGroups = new Map(); // pcPattern → [voicings]
+    for(const v of unique){
+      const pat = v.map(n=>`${n.s}:${n.pc}`).sort().join('|');
+      if(!pcPatternGroups.has(pat)) pcPatternGroups.set(pat,[]);
+      pcPatternGroups.get(pat).push(v);
     }
 
+    // Assign group numbers: root shape is group 0, others ordered by proximity to root
+    // Sort pc-patterns by how close their nearest voicing is to the root median fret
+    const patternList = [...pcPatternGroups.entries()];
+
+    // Separate root pattern from the rest
+    const rootPatternEntry = patternList.find(([pat])=>pat===rootPCPattern);
+    const otherPatterns    = patternList.filter(([pat])=>pat!==rootPCPattern);
+
+    // For each non-root pattern, find the voicing nearest to rootMedianFret
+    function nearestFret(voicings){
+      return Math.min(...voicings.map(v=>{
+        const med = v.reduce((a,n)=>a+n.f,0)/v.length;
+        return Math.abs(med - rootMedianFret);
+      }));
+    }
+
+    otherPatterns.sort((a,b)=>nearestFret(a[1])-nearestFret(b[1]));
+
+    // Build ordered pattern list: [root, ...others by proximity]
+    const orderedPatterns = rootPatternEntry
+      ? [[rootPCPattern, rootPatternEntry[1]], ...otherPatterns]
+      : otherPatterns;
+
+    // For each pattern, pick the best representative voicing:
+    // Among all voicings with this pc-pattern, pick the one whose median fret is
+    // closest to rootMedianFret (so inversions "follow" the root position, not wrap back).
+    function bestVoicing(voicings){
+      return voicings.reduce((best,v)=>{
+        const med = v.reduce((a,n)=>a+n.f,0)/v.length;
+        const bestMed = best.reduce((a,n)=>a+n.f,0)/best.length;
+        return Math.abs(med-rootMedianFret) < Math.abs(bestMed-rootMedianFret) ? v : best;
+      });
+    }
+
+    // Build displayDots from the selected representatives, up to NUM_GROUPS
     this.displayDots={};
-    for(const{voicing,group}of selV)
-      for(const n of voicing)
-        this.displayDots[`${n.s}-${n.f}`]={group,label:labelFor(n.pc),noteName:NOTES[n.pc]};
+
+    // Always use the exact user-placed dots for group 0
+    for(const k of keys){
+      const[s,f]=k.split('-').map(Number);
+      this.displayDots[k]={group:0,label:labelFor(noteAt(s,f)),noteName:NOTES[noteAt(s,f)]};
+    }
+
+    // Fill remaining groups from the ordered inversion patterns
+    let groupNum=1;
+    for(let i=0; i<orderedPatterns.length && groupNum<NUM_GROUPS; i++){
+      const [pat, voicings] = orderedPatterns[i];
+      if(pat===rootPCPattern) continue; // already in group 0
+
+      const rep = bestVoicing(voicings);
+      // Check none of these cells are already occupied
+      const cells = rep.map(n=>`${n.s}-${n.f}`);
+      if(cells.some(c=>this.displayDots[c])) continue;
+
+      for(const n of rep){
+        this.displayDots[`${n.s}-${n.f}`]={group:groupNum,label:labelFor(n.pc),noteName:NOTES[n.pc]};
+      }
+      groupNum++;
+    }
 
     const rootName=NOTES[root], lock=this.rootOverride!==null;
 
@@ -813,7 +888,7 @@ class ChordInstance{
 
     for(const[key,{group,label,noteName}]of Object.entries(this.displayDots)){
       const[s,f]=key.split('-').map(Number);
-      const displayLabel=this.showNotes?(noteName||NOTES[noteAt(s,f)]):label;
+      const displayLabel=globalShowNotes?(noteName||NOTES[noteAt(s,f)]):label;
       const dot=document.createElement('div');
       dot.className=`dot dot-g${group}`; dot.textContent=displayLabel; dot.dataset.group=group;
 
