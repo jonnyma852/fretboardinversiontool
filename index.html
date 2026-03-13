@@ -29,11 +29,9 @@ body {
   padding: 10px 12px 50px; gap: 0;
 }
 
-/* ── Header ──────────────────────────────────────────────── */
 header { text-align: center; margin-bottom: 8px; }
 header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
 
-/* ── Global audio bar ────────────────────────────────────── */
 .global-controls {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center;
   padding: 6px 14px; background: var(--surface); border: 1px solid var(--border);
@@ -42,7 +40,6 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
 .gc-label { font-size: 1.0rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .gc-divider { width: 1px; height: 22px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
 
-/* ── Chord instances ─────────────────────────────────────── */
 .chord-instances { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
 
 .chord-instance {
@@ -52,35 +49,15 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
 }
 
 .chord-bar {
-  display: none;
-  align-items: center;
-  gap: 8px;
+  display: none; align-items: center; gap: 8px;
   background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-  padding: 6px 10px;
-  flex-wrap: wrap;
+  padding: 6px 10px; flex-wrap: wrap;
 }
-
-.chord-bar-name {
-  font-size: 1.31rem; font-weight: 700; color: var(--accent);
-  white-space: nowrap; flex-shrink: 0;
-  min-width: 120px;
-}
-
+.chord-bar-name { font-size: 1.31rem; font-weight: 700; color: var(--accent); white-space: nowrap; flex-shrink: 0; min-width: 120px; }
 .chord-bar-spacer { flex: 1; }
-
-.chord-bar-root {
-  display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
-  justify-content: center; flex-shrink: 0;
-}
-.root-label {
-  font-size: 0.94rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--muted); white-space: nowrap;
-}
-
-.chord-bar-btns {
-  display: flex; align-items: center; gap: 6px;
-  flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
-}
+.chord-bar-root { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; justify-content: center; flex-shrink: 0; }
+.root-label { font-size: 0.94rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.chord-bar-btns { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
 
 @media (max-width: 680px) {
   .chord-bar { flex-direction: column; align-items: stretch; }
@@ -89,7 +66,6 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
   .chord-bar-btns { justify-content: flex-end; }
 }
 
-/* ── Root pills ──────────────────────────────────────────── */
 .root-pill {
   font-family: 'IBM Plex Mono', monospace; font-size: 1.025rem; font-weight: 700;
   padding: 2px 8px; border-radius: 20px; cursor: pointer; user-select: none;
@@ -103,14 +79,12 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
 .root-pill.auto-pill { border-style: dashed; }
 .root-pill.auto-pill.selected { background: var(--surface); border-color: var(--accent); color: var(--accent); border-style: solid; }
 
-/* ── Empty / single-note placeholder ─────────────────────── */
 .status-empty {
   font-size: 1.1rem; color: var(--muted);
   padding: 5px 12px; background: var(--bg); border: 1px solid var(--border);
   border-radius: 6px; text-align: center;
 }
 
-/* ── Buttons ─────────────────────────────────────────────── */
 .btn {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
   padding: 6px 13px; border-radius: 5px; font-family: 'IBM Plex Mono', monospace;
@@ -132,7 +106,6 @@ header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-t
 .btn.remove-btn { color: var(--muted); font-size: 0.975rem; }
 .btn.remove-btn:hover { border-color: #e84361; color: #e84361; background: #1e1018; }
 
-/* ── Volume slider ───────────────────────────────────────── */
 .vol-wrap {
   display: flex; align-items: center; gap: 6px;
   background: var(--bg); border: 1px solid var(--border);
@@ -151,10 +124,7 @@ input[type=range].vol-slider::-moz-range-thumb {
 }
 .vol-pct { font-size: 0.975rem; color: var(--muted); width: 36px; text-align: right; }
 
-/* ── Fretboard ───────────────────────────────────────────── */
-.fb-scroll {
-  width: 100%; overflow-x: auto; padding-bottom: 8px; padding-top: 6px; text-align: center;
-}
+.fb-scroll { width: 100%; overflow-x: auto; padding-bottom: 8px; padding-top: 6px; text-align: center; }
 @media (max-width: 900px) {
   .fb-scroll { overflow-x: hidden; }
   .fb-wrap   { transform-origin: top left; }
@@ -225,7 +195,6 @@ input[type=range].vol-slider::-moz-range-thumb {
 .fret-marker.middle.left  { top: calc(100% - 3px); left: calc(50% - 8px); }
 .fret-marker.middle.right { top: calc(100% - 3px); left: calc(50% + 8px); }
 
-/* ── Dots ────────────────────────────────────────────────── */
 .dot {
   width: 30px; height: 30px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -246,7 +215,6 @@ input[type=range].vol-slider::-moz-range-thumb {
 .dot-g7 { background: var(--g7); border: 2px solid var(--g7b); color: #111; }
 .dot-g8 { background: var(--g8); border: 2px solid var(--g8b); color: #fff; }
 
-/* ── Legend & interval key ───────────────────────────────── */
 .legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-size: 1.025rem; color: var(--muted); }
 .legend-sw { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
@@ -254,7 +222,6 @@ input[type=range].vol-slider::-moz-range-thumb {
 .interval-key { font-size: 0.975rem; color: var(--muted); text-align: center; line-height: 2.1; max-width: 760px; }
 .interval-key b { color: #9ab4e8; }
 
-/* ── Add Chord button ────────────────────────────────────── */
 .add-chord-wrap { display: flex; justify-content: center; margin: 12px 0 4px; }
 .add-chord-btn {
   display: flex; align-items: center; gap: 8px;
@@ -265,7 +232,6 @@ input[type=range].vol-slider::-moz-range-thumb {
 }
 .add-chord-btn:hover { background: #221f10; }
 
-/* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 600px) {
   body { padding: 8px 8px 50px; }
   .chord-instance { padding: 8px 10px 10px; }
@@ -319,7 +285,6 @@ input[type=range].vol-slider::-moz-range-thumb {
 </div>
 
 <script>
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const NOTES      = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const NUM_FRETS  = 24, FRET_W = 44;
 const OPEN       = [4,9,2,7,11,4];
@@ -364,7 +329,6 @@ const DOUBLE_MARKER_FRETS  = new Set([12,24]);
 function noteAt(s,f){ return (OPEN[s]+f)%12; }
 function midiToHz(m){ return 440*Math.pow(2,(m-69)/12); }
 
-// ─── AUDIO ────────────────────────────────────────────────────────────────────
 let audioCtx=null, masterGain=null;
 let audioEnabled=false, currentVolume=0.70;
 
@@ -421,7 +385,6 @@ function strumNotes(notes,btnEl){
   }
 }
 
-// ─── GLOBAL AUDIO ─────────────────────────────────────────────────────────────
 function toggleGlobalAudio(){
   audioEnabled=!audioEnabled;
   const btn=document.getElementById('globalAudioBtn');
@@ -447,23 +410,15 @@ function onGlobalVolume(val){
 }
 window.addEventListener('load',()=>onGlobalVolume(70));
 
-// ─── GLOBAL NOTES/INTERVALS TOGGLE ────────────────────────────────────────────
 let globalShowNotes = false;
-
 function toggleGlobalNotes(){
   globalShowNotes = !globalShowNotes;
   const btn = document.getElementById('globalNotesBtn');
-  if(globalShowNotes){
-    btn.textContent = '♩ Notes';
-    btn.classList.add('toggle-active');
-  } else {
-    btn.textContent = '♩ Intervals';
-    btn.classList.remove('toggle-active');
-  }
+  if(globalShowNotes){ btn.textContent='♩ Notes'; btn.classList.add('toggle-active'); }
+  else { btn.textContent='♩ Intervals'; btn.classList.remove('toggle-active'); }
   instances.forEach(inst => inst.render());
 }
 
-// ─── CHORD DETECTION ──────────────────────────────────────────────────────────
 function detectChord(pcs,forcedRoot=null){
   const pcSet=[...new Set(pcs)];
   const roots=forcedRoot!==null?[forcedRoot]:Array.from({length:12},(_,i)=>i);
@@ -485,7 +440,6 @@ function detectChord(pcs,forcedRoot=null){
   return{root,name:t.name,labelFor:pc=>{const iv=(pc-root+12)%12;return t.lb[iv]??genericLabel(iv);}};
 }
 
-// ─── CHORD INSTANCE ────────────────────────────────────────────────────────────
 let instanceCounter=0;
 const instances=[];
 
@@ -509,40 +463,27 @@ class ChordInstance{
     nameEl.className='chord-bar-name'; nameEl.id=`sName-${this.id}`;
     bar.appendChild(nameEl);
 
-    const sp1=document.createElement('div'); sp1.className='chord-bar-spacer';
-    bar.appendChild(sp1);
+    const sp1=document.createElement('div'); sp1.className='chord-bar-spacer'; bar.appendChild(sp1);
 
-    const rootZone=document.createElement('div');
-    rootZone.className='chord-bar-root';
-
-    const rootLbl=document.createElement('span');
-    rootLbl.className='root-label'; rootLbl.textContent='Root';
+    const rootZone=document.createElement('div'); rootZone.className='chord-bar-root';
+    const rootLbl=document.createElement('span'); rootLbl.className='root-label'; rootLbl.textContent='Root';
     rootZone.appendChild(rootLbl);
-
-    const pillsWrap=document.createElement('div');
-    pillsWrap.id=`rootPills-${this.id}`;
-    pillsWrap.style.cssText='display:contents;';
+    const pillsWrap=document.createElement('div'); pillsWrap.id=`rootPills-${this.id}`; pillsWrap.style.cssText='display:contents;';
     rootZone.appendChild(pillsWrap);
-
     bar.appendChild(rootZone);
 
-    const sp2=document.createElement('div'); sp2.className='chord-bar-spacer';
-    bar.appendChild(sp2);
+    const sp2=document.createElement('div'); sp2.className='chord-bar-spacer'; bar.appendChild(sp2);
 
-    const btns=document.createElement('div');
-    btns.className='chord-bar-btns'; btns.id=`acts-${this.id}`;
-
+    const btns=document.createElement('div'); btns.className='chord-bar-btns'; btns.id=`acts-${this.id}`;
     const playBtn=document.createElement('button');
     playBtn.className='btn accent-outline'; playBtn.id=`playBtn-${this.id}`;
     playBtn.textContent='▶ Play'; playBtn.disabled=!audioEnabled;
     playBtn.addEventListener('click',()=>this.playChord());
     btns.appendChild(playBtn);
-
     const clearBtn=document.createElement('button');
     clearBtn.className='btn red'; clearBtn.textContent='✕ Clear';
     clearBtn.addEventListener('click',()=>this.clearAll());
     btns.appendChild(clearBtn);
-
     bar.appendChild(btns);
     wrap.appendChild(bar);
 
@@ -551,18 +492,14 @@ class ChordInstance{
     emptyEl.textContent='Click any fret to start placing notes';
     wrap.appendChild(emptyEl);
 
-    const fbScroll=document.createElement('div');
-    fbScroll.className='fb-scroll'; fbScroll.id=`fbScroll-${this.id}`;
-    const fbWrap=document.createElement('div');
-    fbWrap.className='fb-wrap'; fbWrap.id=`fbWrap-${this.id}`;
+    const fbScroll=document.createElement('div'); fbScroll.className='fb-scroll'; fbScroll.id=`fbScroll-${this.id}`;
+    const fbWrap=document.createElement('div'); fbWrap.className='fb-wrap'; fbWrap.id=`fbWrap-${this.id}`;
 
     const fnRow=document.createElement('div'); fnRow.className='fret-nums-row';
-    const spacer=document.createElement('div'); spacer.style.cssText='width:40px;flex-shrink:0';
-    fnRow.appendChild(spacer);
+    const spacer=document.createElement('div'); spacer.style.cssText='width:40px;flex-shrink:0'; fnRow.appendChild(spacer);
     for(let f=1;f<=NUM_FRETS;f++){
       const d=document.createElement('div');
-      d.className='fret-num-cell'; d.style.width=FRET_W+'px'; d.textContent=f;
-      fnRow.appendChild(d);
+      d.className='fret-num-cell'; d.style.width=FRET_W+'px'; d.textContent=f; fnRow.appendChild(d);
     }
     fbWrap.appendChild(fnRow);
 
@@ -572,12 +509,10 @@ class ChordInstance{
       row.className='string-row'; row.dataset.s=si;
       if(si===5) row.classList.add('top-string');
       if(si===0) row.classList.add('bottom-string');
-
       const nm=document.createElement('div');
       nm.className='string-name'; nm.textContent=SNAMES[si]; nm.dataset.s=si;
       nm.addEventListener('click',()=>this.toggleNote(si,0));
       row.appendChild(nm);
-
       for(let f=1;f<=NUM_FRETS;f++){
         const cell=document.createElement('div');
         cell.className='fret-cell'; cell.style.width=FRET_W+'px';
@@ -606,7 +541,6 @@ class ChordInstance{
     fbWrap.appendChild(fb);
     fbScroll.appendChild(fbWrap);
     wrap.appendChild(fbScroll);
-
     document.getElementById('chordInstances').appendChild(wrap);
     this.scaleFretboard();
   }
@@ -636,36 +570,18 @@ class ChordInstance{
     updateRemoveButtons();
   }
 
-  _showBar(){
-    const bar=document.getElementById(`chordBar-${this.id}`);
-    if(bar) bar.style.display='flex';
-    const empty=document.getElementById(`emptyState-${this.id}`);
-    if(empty) empty.style.display='none';
-  }
-  _hideBar(){
-    const bar=document.getElementById(`chordBar-${this.id}`);
-    if(bar) bar.style.display='none';
-    const empty=document.getElementById(`emptyState-${this.id}`);
-    if(empty) empty.style.display='block';
-  }
-  _showEmpty(msg){
-    const empty=document.getElementById(`emptyState-${this.id}`);
-    if(empty){ empty.textContent=msg; empty.style.display='block'; }
-    const bar=document.getElementById(`chordBar-${this.id}`);
-    if(bar) bar.style.display='none';
-  }
+  _showBar(){ document.getElementById(`chordBar-${this.id}`).style.display='flex'; document.getElementById(`emptyState-${this.id}`).style.display='none'; }
+  _hideBar(){ document.getElementById(`chordBar-${this.id}`).style.display='none'; document.getElementById(`emptyState-${this.id}`).style.display='block'; }
+  _showEmpty(msg){ const e=document.getElementById(`emptyState-${this.id}`); e.textContent=msg; e.style.display='block'; document.getElementById(`chordBar-${this.id}`).style.display='none'; }
 
   _buildRootPills(chordPCs){
-    const wrap=document.getElementById(`rootPills-${this.id}`);
-    if(!wrap) return;
+    const wrap=document.getElementById(`rootPills-${this.id}`); if(!wrap) return;
     wrap.innerHTML='';
-
     const auto=document.createElement('span');
     auto.className='root-pill auto-pill'+(this.rootOverride===null?' selected':'');
     auto.textContent='Auto';
     auto.addEventListener('click',()=>{ this.rootOverride=null; this.computeAndDisplay(); });
     wrap.appendChild(auto);
-
     const inSet=new Set(chordPCs);
     for(let pc=0;pc<12;pc++){
       const pill=document.createElement('span');
@@ -680,8 +596,7 @@ class ChordInstance{
   playChord(){
     const keys=Object.keys(this.rootShape);
     if(!keys.length||!audioEnabled) return;
-    const notes=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return{s,f}; }).sort((a,b)=>a.s-b.s);
-    strumNotes(notes,document.getElementById(`playBtn-${this.id}`));
+    strumNotes(keys.map(k=>{ const[s,f]=k.split('-').map(Number); return{s,f}; }).sort((a,b)=>a.s-b.s), document.getElementById(`playBtn-${this.id}`));
   }
 
   playInversion(groupId){
@@ -746,45 +661,61 @@ class ChordInstance{
       if(!seen.has(sig)){seen.add(sig);unique.push(v);}
     }
 
-    // ── Ordering logic ────────────────────────────────────────────────────────
-    // 1. Sort all voicings by min fret ascending (preserves original grouping identity).
-    // 2. Find rootIdx — the user's placed shape.
-    // 3. Split: `after` = voicings with higher frets (ascending), `before` = lower frets (ascending).
-    // 4. Order as [root, ...after, ...before]:
-    //    - `after` gets g1, g2, g3… going rightward up the neck (same as original).
-    //    - `before` continues the numbering from the lowest fret upward, so the
-    //      lowest-fret voicing gets the next group number after `after` ends, and
-    //      the voicing just below the root gets the highest group number.
-    //    This matches the expected behaviour: frets 0-1 = Inv 5, frets 2-4 = Inv 6,
-    //    frets 5-6 = Inv 7 when root is at frets 8-9 with 4 inversions above.
+    // Sort all voicings by min fret ascending — preserves original grouping identity.
     unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
     const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
     let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
     if(rootIdx<0) rootIdx=0;
 
-    const after  = unique.slice(rootIdx + 1);  // ascending fret order
-    const before = unique.slice(0, rootIdx);   // ascending fret order — lowest fret = next group after after[]
+    // Split into two independent groups:
+    // `after` = voicings above root fret position (ascending) → get g1, g2, g3…
+    // `before` = voicings below root fret position (ascending) → get next group numbers
+    //
+    // KEY FIX: `before` voicings use their OWN fresh occ set so they are never
+    // blocked by string cells claimed by `after` voicings. Each region of the
+    // neck is processed independently, which is correct because they occupy
+    // completely different fret zones with no real cell overlap.
+    const after  = unique.slice(rootIdx + 1);  // ascending
+    const before = unique.slice(0, rootIdx);   // ascending: fret0=next grp, fret_closest=last grp
 
-    const ordered = [unique[rootIdx], ...after, ...before];
+    // Pass 1: root + after, shared occ
+    const selV=[];
+    const occAfter=new Set();
 
-    // Greedy cell-occupation pass — unchanged from original
-    const selV=[],occ=new Set();
-    for(const voicing of ordered){
+    // Root is always group 0
+    keys.forEach(k=>occAfter.add(k.replace('-','S').split('S').map(Number).map((v,i)=>i===0?v:v).join('-')));
+    // Actually just add root cells directly
+    for(const k of keys) occAfter.add(k);
+    selV.push({voicing: unique[rootIdx], group: 0});
+
+    for(const voicing of after){
       const cells=voicing.map(n=>`${n.s}-${n.f}`);
-      if(cells.every(c=>!occ.has(c))){
-        selV.push({voicing,group:selV.length%NUM_GROUPS});
-        cells.forEach(c=>occ.add(c));
+      if(cells.every(c=>!occAfter.has(c))){
+        selV.push({voicing, group: selV.length % NUM_GROUPS});
+        cells.forEach(c=>occAfter.add(c));
+      }
+    }
+
+    // Pass 2: before, fresh occ — completely independent of after
+    const occBefore=new Set();
+    // Seed with root cells so before-voicings can't overlap the root shape itself
+    for(const k of keys) occBefore.add(k);
+
+    for(const voicing of before){
+      const cells=voicing.map(n=>`${n.s}-${n.f}`);
+      if(cells.every(c=>!occBefore.has(c))){
+        selV.push({voicing, group: selV.length % NUM_GROUPS});
+        cells.forEach(c=>occBefore.add(c));
       }
     }
 
     this.displayDots={};
-    for(const{voicing,group}of selV)
+    for(const{voicing,group} of selV)
       for(const n of voicing)
-        this.displayDots[`${n.s}-${n.f}`]={group,label:labelFor(n.pc),noteName:NOTES[n.pc]};
+        this.displayDots[`${n.s}-${n.f}`]={group, label:labelFor(n.pc), noteName:NOTES[n.pc]};
 
     const rootName=NOTES[root], lock=this.rootOverride!==null;
-
     const nameEl=document.getElementById(`sName-${this.id}`);
     if(nameEl) nameEl.textContent=`${rootName} ${name}${lock?' ✎':''}`;
 
@@ -799,7 +730,7 @@ class ChordInstance{
     fb.querySelectorAll('.string-name').forEach(nm=>{ nm.style.color=''; nm.style.fontWeight=''; });
     this.groupElements={};
 
-    for(const[key,{group,label,noteName}]of Object.entries(this.displayDots)){
+    for(const[key,{group,label,noteName}] of Object.entries(this.displayDots)){
       const[s,f]=key.split('-').map(Number);
       const displayLabel=globalShowNotes?(noteName||NOTES[noteAt(s,f)]):label;
       const dot=document.createElement('div');
@@ -855,7 +786,6 @@ class ChordInstance{
   }
 }
 
-// ─── INSTANCE MANAGEMENT ──────────────────────────────────────────────────────
 function updateRemoveButtons(){
   instances.forEach(inst=>{
     const acts=document.getElementById(`acts-${inst.id}`);
@@ -878,15 +808,10 @@ function addChordInstance(){
   updateRemoveButtons();
   inst.computeAndDisplay();
   inst.scaleFretboard();
-  setTimeout(()=>{
-    const el=document.getElementById(`ci-${inst.id}`);
-    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
-  },100);
+  setTimeout(()=>{ document.getElementById(`ci-${inst.id}`)?.scrollIntoView({behavior:'smooth',block:'start'}); },100);
 }
 
 window.addEventListener('resize',()=>instances.forEach(inst=>inst.scaleFretboard()));
-
-// ─── BOOT ─────────────────────────────────────────────────────────────────────
 addChordInstance();
 </script>
 </body>
