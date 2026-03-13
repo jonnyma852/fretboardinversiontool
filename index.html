@@ -286,9 +286,8 @@ input[type=range].vol-slider::-moz-range-thumb {
 
 <script>
 const NOTES      = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-// Fret 24 = same pitch as open (wrap-around). Excluded to avoid duplicate voicings.
 const NUM_FRETS  = 23, FRET_W = 44;
-const OPEN       = [4,9,2,7,11,4]; // E A D G B e (string 0=low E ... 5=high e)
+const OPEN       = [4,9,2,7,11,4]; // E A D G B e  (string 0=low E … 5=high e)
 const SNAMES     = ['E','A','D','G','B','e'];
 const OPEN_MIDI  = [40,45,50,55,59,64];
 const NUM_GROUPS = 9;
@@ -620,6 +619,7 @@ class ChordInstance{
       return;
     }
 
+    // Show just the placed notes as g0 while we figure out the chord
     this.displayDots={};
     for(const k of keys){
       const[s,f]=k.split('-').map(Number);
@@ -639,84 +639,47 @@ class ChordInstance{
 
     // ── INVERSION GROUPING ────────────────────────────────────────────────────
     //
-    // Core insight: two notes on the same string that are both chord tones are
-    // enharmonically equivalent in this context — they represent the same scale
-    // degree, just in different octaves.  Every chord position on the neck can be
-    // characterised by which chord tone sits in the BASS (lowest string played).
+    // Rule: go string by string. On each string, the placed note = g0.
+    // The next chord-tone fret up that string = g1. The next = g2. Etc.
+    // Wrap around: after fret 23, continue from fret 0.
+    // Result: exactly one dot per string per group number.
     //
-    // Algorithm:
-    //   1. For each string, enumerate every fret that plays a chord-tone PC.
-    //   2. The lowest-numbered used string is the "bass string".
-    //      Every fret on that string that is a chord tone defines a distinct
-    //      inversion identity (its pitch-class = bass PC of that inversion).
-    //   3. All other chord-tone frets on all strings are coloured by which
-    //      bass-PC "region" they belong to — i.e. they share the colour of the
-    //      nearest bass-note occurrence to their left (lower fret).
-    //   4. The user's root shape identifies which bass-PC = group 0.
-    //      Bass-PCs to the right get g1, g2, g3… and bass-PCs that wrap around
-    //      (lower fret, to the left) get the continuing group numbers.
-    //
-    // This produces exactly the expected behaviour: every dot between two
-    // consecutive bass-note anchors shares one colour, regardless of which string
-    // it's on, and the colour transitions fire at the exact fret where the bass
-    // note changes.
+    // We build displayDots fresh — one entry per (string, group).
 
-    const bassString = usedStrings[0]; // lowest string index = lowest pitched
-
-    // All frets on the bass string that are chord tones, sorted ascending
-    const bassAnchors = []; // {f, pc}
-    for(let f=0;f<=NUM_FRETS;f++){
-      const pc = noteAt(bassString, f);
-      if(playedPCs.includes(pc)) bassAnchors.push({f, pc});
-    }
-
-    // Which anchor matches the user's placed note on the bass string?
-    const rootBassKey = keys.find(k => +k.split('-')[0] === bassString);
-    const rootBassF   = rootBassKey ? +rootBassKey.split('-')[1] : 0;
-    let rootAnchorIdx = bassAnchors.findIndex(a => a.f === rootBassF);
-    if(rootAnchorIdx < 0) rootAnchorIdx = 0;
-
-    // Reorder anchors: [root, ...after, ...before] — same logic as before
-    const anchorsAfter  = bassAnchors.slice(rootAnchorIdx + 1);
-    const anchorsBefore = bassAnchors.slice(0, rootAnchorIdx);
-    const orderedAnchors = [bassAnchors[rootAnchorIdx], ...anchorsAfter, ...anchorsBefore];
-
-    // Build a lookup: bassAnchor fret → group number
-    const anchorGroup = new Map(); // anchor fret → group
-    orderedAnchors.forEach((a, i) => anchorGroup.set(a.f, i % NUM_GROUPS));
-
-    // For every fret position on every used string, assign the group of the
-    // nearest bass anchor at or below that fret (wrapping around at the top).
-    // "Nearest to the left" means: largest anchor.f <= this fret.
-    // For frets below the first anchor, use the last anchor (wrap-around group).
-
-    // Sorted anchor frets ascending for binary-search style lookup
-    const anchorFrets = bassAnchors.map(a=>a.f); // already ascending
-
-    const groupForFret = (f) => {
-      // Find the rightmost anchor fret that is <= f
-      let lo = -1;
-      for(let i=0; i<anchorFrets.length; i++){
-        if(anchorFrets[i] <= f) lo = i; else break;
-      }
-      if(lo < 0){
-        // f is before the first anchor — belongs to the last anchor's group
-        // (wrap-around: the region before the lowest anchor is the tail of the
-        // highest anchor's inversion)
-        const lastAnchor = bassAnchors[bassAnchors.length - 1];
-        return anchorGroup.get(lastAnchor.f);
-      }
-      return anchorGroup.get(anchorFrets[lo]);
-    };
-
-    // Build displayDots: every chord-tone fret on every used string gets coloured
     this.displayDots = {};
+
     for(const s of usedStrings){
-      for(let f=0;f<=NUM_FRETS;f++){
+      // The fret the user placed on this string
+      const placedKey = keys.find(k => +k.split('-')[0] === s);
+      if(!placedKey) continue;
+      const rootF = +placedKey.split('-')[1];
+
+      // Collect all chord-tone frets on this string, ascending
+      const allFrets = [];
+      for(let f = 0; f <= NUM_FRETS; f++){
+        if(playedPCs.includes(noteAt(s, f))) allFrets.push(f);
+      }
+
+      // Find which index in allFrets is the placed note
+      const rootIdx = allFrets.indexOf(rootF);
+
+      // Reorder: [rootF, next up, next up, ..., wrap around]
+      // i.e. allFrets[rootIdx], allFrets[rootIdx+1], ..., allFrets[end], allFrets[0], ..., allFrets[rootIdx-1]
+      const ordered = [
+        ...allFrets.slice(rootIdx),
+        ...allFrets.slice(0, rootIdx)
+      ];
+
+      // Assign group numbers: position 0 = g0, position 1 = g1, etc.
+      for(let i = 0; i < ordered.length; i++){
+        const f = ordered[i];
+        const group = i % NUM_GROUPS;
         const pc = noteAt(s, f);
-        if(!playedPCs.includes(pc)) continue;
-        const group = groupForFret(f);
-        this.displayDots[`${s}-${f}`] = {group, label:labelFor(pc), noteName:NOTES[pc]};
+        this.displayDots[`${s}-${f}`] = {
+          group,
+          label: labelFor(pc),
+          noteName: NOTES[pc]
+        };
       }
     }
 
