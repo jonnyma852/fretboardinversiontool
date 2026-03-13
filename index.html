@@ -505,16 +505,13 @@ class ChordInstance{
     const bar=document.createElement('div');
     bar.className='chord-bar'; bar.id=`chordBar-${this.id}`;
 
-    // LEFT: chord name
     const nameEl=document.createElement('span');
     nameEl.className='chord-bar-name'; nameEl.id=`sName-${this.id}`;
     bar.appendChild(nameEl);
 
-    // SPACER
     const sp1=document.createElement('div'); sp1.className='chord-bar-spacer';
     bar.appendChild(sp1);
 
-    // CENTER: Root label + pills
     const rootZone=document.createElement('div');
     rootZone.className='chord-bar-root';
 
@@ -529,11 +526,9 @@ class ChordInstance{
 
     bar.appendChild(rootZone);
 
-    // SPACER
     const sp2=document.createElement('div'); sp2.className='chord-bar-spacer';
     bar.appendChild(sp2);
 
-    // RIGHT: action buttons
     const btns=document.createElement('div');
     btns.className='chord-bar-btns'; btns.id=`acts-${this.id}`;
 
@@ -551,13 +546,11 @@ class ChordInstance{
     bar.appendChild(btns);
     wrap.appendChild(bar);
 
-    // Empty / single-note state
     const emptyEl=document.createElement('div');
     emptyEl.className='status-empty'; emptyEl.id=`emptyState-${this.id}`;
     emptyEl.textContent='Click any fret to start placing notes';
     wrap.appendChild(emptyEl);
 
-    // Fretboard
     const fbScroll=document.createElement('div');
     fbScroll.className='fb-scroll'; fbScroll.id=`fbScroll-${this.id}`;
     const fbWrap=document.createElement('div');
@@ -618,7 +611,6 @@ class ChordInstance{
     this.scaleFretboard();
   }
 
-  // ── Note interaction ──────────────────────────────────────
   toggleNote(s,f){
     const key=`${s}-${f}`;
     if(this.rootShape[key]){ delete this.rootShape[key]; }
@@ -644,7 +636,6 @@ class ChordInstance{
     updateRemoveButtons();
   }
 
-  // ── State helpers ─────────────────────────────────────────
   _showBar(){
     const bar=document.getElementById(`chordBar-${this.id}`);
     if(bar) bar.style.display='flex';
@@ -664,7 +655,6 @@ class ChordInstance{
     if(bar) bar.style.display='none';
   }
 
-  // ── Root pills ────────────────────────────────────────────
   _buildRootPills(chordPCs){
     const wrap=document.getElementById(`rootPills-${this.id}`);
     if(!wrap) return;
@@ -687,7 +677,6 @@ class ChordInstance{
     }
   }
 
-  // ── Playback ──────────────────────────────────────────────
   playChord(){
     const keys=Object.keys(this.rootShape);
     if(!keys.length||!audioEnabled) return;
@@ -704,7 +693,6 @@ class ChordInstance{
     strumNotes(notes.sort((a,b)=>a.s-b.s),null);
   }
 
-  // ── Compute ───────────────────────────────────────────────
   computeAndDisplay(){
     const keys=Object.keys(this.rootShape);
     const pb=document.getElementById(`playBtn-${this.id}`);
@@ -716,7 +704,6 @@ class ChordInstance{
       return;
     }
 
-    // Show placed notes immediately as group-0
     this.displayDots={};
     for(const k of keys){
       const[s,f]=k.split('-').map(Number);
@@ -759,21 +746,25 @@ class ChordInstance{
       if(!seen.has(sig)){seen.add(sig);unique.push(v);}
     }
 
-    // Sort all voicings by min fret ascending — same as original, preserves
-    // the correct inversion identity/numbering order.
+    // ── Ordering logic ────────────────────────────────────────────────────────
+    // 1. Sort all voicings by min fret ascending (preserves original grouping identity).
+    // 2. Find rootIdx — the user's placed shape.
+    // 3. Split: `after` = voicings with higher frets (ascending), `before` = lower frets (ascending).
+    // 4. Order as [root, ...after, ...before]:
+    //    - `after` gets g1, g2, g3… going rightward up the neck (same as original).
+    //    - `before` continues the numbering from the lowest fret upward, so the
+    //      lowest-fret voicing gets the next group number after `after` ends, and
+    //      the voicing just below the root gets the highest group number.
+    //    This matches the expected behaviour: frets 0-1 = Inv 5, frets 2-4 = Inv 6,
+    //    frets 5-6 = Inv 7 when root is at frets 8-9 with 4 inversions above.
     unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
     const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
     let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
     if(rootIdx<0) rootIdx=0;
 
-    // Split into after (frets above root, ascending) and before (frets below root).
-    // `after` stays in ascending order — same as original.
-    // `before` is reversed so the highest-fret (closest-to-root) voicing comes
-    // first. This means group numbers continue naturally downward from where
-    // `after` left off, and low-fret voicings no longer block each other via `occ`.
-    const after  = unique.slice(rootIdx + 1);           // ascending, unchanged
-    const before = unique.slice(0, rootIdx).reverse();  // descending: closest-to-root first
+    const after  = unique.slice(rootIdx + 1);  // ascending fret order
+    const before = unique.slice(0, rootIdx);   // ascending fret order — lowest fret = next group after after[]
 
     const ordered = [unique[rootIdx], ...after, ...before];
 
@@ -802,7 +793,6 @@ class ChordInstance{
     this.render();
   }
 
-  // ── Render ────────────────────────────────────────────────
   render(){
     const fb=document.getElementById(`fb-${this.id}`); if(!fb) return;
     fb.querySelectorAll('.dot').forEach(d=>d.remove());
