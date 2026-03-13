@@ -286,7 +286,9 @@ input[type=range].vol-slider::-moz-range-thumb {
 
 <script>
 const NOTES      = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const NUM_FRETS  = 24, FRET_W = 44;
+// Fret 24 = same pitch as open strings (octave repeat) — excluded to prevent
+// duplicate voicings that corrupt inversion grouping logic.
+const NUM_FRETS  = 23, FRET_W = 44;
 const OPEN       = [4,9,2,7,11,4];
 const SNAMES     = ['E','A','D','G','B','e'];
 const OPEN_MIDI  = [40,45,50,55,59,64];
@@ -324,7 +326,7 @@ function genericLabel(iv){
 }
 
 const SINGLE_MARKER_FRETS = new Set([3,5,7,9,15,17,19,21]);
-const DOUBLE_MARKER_FRETS  = new Set([12,24]);
+const DOUBLE_MARKER_FRETS  = new Set([12]); // 24 removed — same pitch as open
 
 function noteAt(s,f){ return (OPEN[s]+f)%12; }
 function midiToHz(m){ return 440*Math.pow(2,(m-69)/12); }
@@ -639,10 +641,14 @@ class ChordInstance{
     const optsByString={};
     for(const s of usedStrings){
       optsByString[s]=[];
-      for(let f=0;f<=NUM_FRETS;f++){
+      // f=1..NUM_FRETS only — open strings (f=0) handled separately, fret 24 excluded
+      for(let f=1;f<=NUM_FRETS;f++){
         const pc=noteAt(s,f);
         if(playedPCs.includes(pc)) optsByString[s].push({f,pc,label:labelFor(pc)});
       }
+      // Also include open string (f=0) if it matches
+      const openPc=noteAt(s,0);
+      if(playedPCs.includes(openPc)) optsByString[s].unshift({f:0,pc:openPc,label:labelFor(openPc)});
     }
 
     const allV=[];
@@ -661,31 +667,19 @@ class ChordInstance{
       if(!seen.has(sig)){seen.add(sig);unique.push(v);}
     }
 
-    // Sort all voicings by min fret ascending — preserves original grouping identity.
+    // Sort all voicings by min fret ascending
     unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
     const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
     let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
     if(rootIdx<0) rootIdx=0;
 
-    // Split into two independent groups:
-    // `after` = voicings above root fret position (ascending) → get g1, g2, g3…
-    // `before` = voicings below root fret position (ascending) → get next group numbers
-    //
-    // KEY FIX: `before` voicings use their OWN fresh occ set so they are never
-    // blocked by string cells claimed by `after` voicings. Each region of the
-    // neck is processed independently, which is correct because they occupy
-    // completely different fret zones with no real cell overlap.
-    const after  = unique.slice(rootIdx + 1);  // ascending
-    const before = unique.slice(0, rootIdx);   // ascending: fret0=next grp, fret_closest=last grp
+    const after  = unique.slice(rootIdx + 1);
+    const before = unique.slice(0, rootIdx);
 
-    // Pass 1: root + after, shared occ
+    // Pass 1: root (g0) + after (g1, g2…) with shared occ
     const selV=[];
     const occAfter=new Set();
-
-    // Root is always group 0
-    keys.forEach(k=>occAfter.add(k.replace('-','S').split('S').map(Number).map((v,i)=>i===0?v:v).join('-')));
-    // Actually just add root cells directly
     for(const k of keys) occAfter.add(k);
     selV.push({voicing: unique[rootIdx], group: 0});
 
@@ -697,9 +691,8 @@ class ChordInstance{
       }
     }
 
-    // Pass 2: before, fresh occ — completely independent of after
+    // Pass 2: before with its own fresh occ (independent of after zone)
     const occBefore=new Set();
-    // Seed with root cells so before-voicings can't overlap the root shape itself
     for(const k of keys) occBefore.add(k);
 
     for(const voicing of before){
