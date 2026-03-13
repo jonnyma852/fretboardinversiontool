@@ -759,41 +759,23 @@ class ChordInstance{
       if(!seen.has(sig)){seen.add(sig);unique.push(v);}
     }
 
-    // ── Sort & order voicings ─────────────────────────────────────────────────
-    //
-    // Original approach: sort all by min-fret ascending, then rotate so the
-    // root shape is first. This gave correct groupings for low-neck shapes but
-    // broke for high-neck shapes because voicings that "wrapped" to the end of
-    // the array (lower frets than root) had their cells already claimed by the
-    // inversions that came before them in the rotated order.
-    //
-    // Fix: sort by min-fret as before (preserves the grouping identity that was
-    // correct), find rootIdx, then build `ordered` as:
-    //   [root] + [voicings AFTER root in fret order] + [voicings BEFORE root, sorted by proximity to root median]
-    //
-    // The "before" slice is re-sorted by proximity rather than just appended raw,
-    // so they compete for cells in proximity order and render cleanly near the
-    // root neck position instead of all failing because early slots were taken.
-    //
+    // Sort all voicings by min fret ascending — same as original, preserves
+    // the correct inversion identity/numbering order.
     unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
     const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
     let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
     if(rootIdx<0) rootIdx=0;
 
-    // Voicings above (higher fret) the root — keep original ascending fret order
-    const after  = unique.slice(rootIdx+1);
-    // Voicings below (lower fret) the root — sort by proximity to root median fret
-    const before = unique.slice(0, rootIdx);
-    const rootFrets  = keys.map(k=>+k.split('-')[1]);
-    const rootMedian = rootFrets.reduce((a,b)=>a+b,0)/rootFrets.length;
-    before.sort((a,b)=>{
-      const dA=Math.abs(a.reduce((s,n)=>s+n.f,0)/a.length - rootMedian);
-      const dB=Math.abs(b.reduce((s,n)=>s+n.f,0)/b.length - rootMedian);
-      return dA-dB;
-    });
+    // Split into after (frets above root, ascending) and before (frets below root).
+    // `after` stays in ascending order — same as original.
+    // `before` is reversed so the highest-fret (closest-to-root) voicing comes
+    // first. This means group numbers continue naturally downward from where
+    // `after` left off, and low-fret voicings no longer block each other via `occ`.
+    const after  = unique.slice(rootIdx + 1);           // ascending, unchanged
+    const before = unique.slice(0, rootIdx).reverse();  // descending: closest-to-root first
 
-    const ordered=[unique[rootIdx], ...after, ...before];
+    const ordered = [unique[rootIdx], ...after, ...before];
 
     // Greedy cell-occupation pass — unchanged from original
     const selV=[],occ=new Set();
