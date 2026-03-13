@@ -29,13 +29,9 @@ body {
   padding: 10px 12px 50px; gap: 0;
 }
 
-/* ── Header — one compact line ───────────────────────────── */
-header {
-  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
-  justify-content: center; margin-bottom: 8px;
-}
-header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
-header p  { font-size: 1.06rem; color: var(--muted); letter-spacing: 0.03em; }
+/* ── Header ──────────────────────────────────────────────── */
+header { text-align: center; margin-bottom: 8px; }
+header h1 { font-size: 1.56rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
 
 /* ── Global audio bar ────────────────────────────────────── */
 .global-controls {
@@ -44,7 +40,6 @@ header p  { font-size: 1.06rem; color: var(--muted); letter-spacing: 0.03em; }
   border-radius: 8px; margin-bottom: 8px; width: 100%; max-width: 860px;
 }
 .gc-label { font-size: 1.0rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-#globalAudioHint { font-size: 0.975rem; color: var(--muted); margin-left: 2px; }
 
 /* ── Chord instances ─────────────────────────────────────── */
 .chord-instances { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; }
@@ -55,46 +50,54 @@ header p  { font-size: 1.06rem; color: var(--muted); letter-spacing: 0.03em; }
   padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 6px;
 }
 
-/* ── Row 1: [Chord N] ···················· [buttons] ─────── */
-.chord-instance-header {
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;
-}
-.chord-num {
-  font-size: 1.0rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--muted); padding: 2px 10px; border: 1px solid var(--border); border-radius: 4px;
-  white-space: nowrap;
-}
-.instance-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-
-/* ── Row 2: info-bar — chord name + root pills + sub-status ─ */
-/* All on ONE row. Hidden until ≥2 notes placed. */
-.info-bar {
-  display: none; /* JS sets to flex */
-  align-items: center; flex-wrap: wrap; gap: 5px;
+/*
+ * ── The single chord bar ──────────────────────────────────
+ * One flex row with 3 zones:
+ *   [chord-name LEFT] [root-zone CENTER] [btn-zone RIGHT]
+ *
+ * Hidden until ≥2 notes placed; empty-state shown instead.
+ */
+.chord-bar {
+  display: none; /* JS sets to flex when ≥2 notes placed */
+  align-items: center;
+  gap: 8px;
   background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-  padding: 5px 10px;
+  padding: 6px 10px;
+  flex-wrap: wrap; /* graceful on narrow screens */
 }
-.info-chord-name {
+
+/* Left zone: chord name */
+.chord-bar-name {
   font-size: 1.31rem; font-weight: 700; color: var(--accent);
   white-space: nowrap; flex-shrink: 0;
+  min-width: 120px; /* prevent collapse */
 }
-.info-divider {
-  width: 1px; height: 20px; background: var(--border); flex-shrink: 0;
-  align-self: center; margin: 0 3px;
+
+/* Spacer pushes root zone to true center, buttons to far right */
+.chord-bar-spacer { flex: 1; }
+
+/* Center zone: Root label + pills */
+.chord-bar-root {
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+  justify-content: center; flex-shrink: 0;
 }
-.root-row-label {
+.root-label {
   font-size: 0.94rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--muted); white-space: nowrap; flex-shrink: 0;
+  color: var(--muted); white-space: nowrap;
 }
-/* Sub-status text lives at the right end of the info-bar */
-.info-sub {
-  font-size: 0.875rem; color: var(--muted);
-  margin-left: auto; white-space: nowrap; padding-left: 8px;
-  overflow: hidden; text-overflow: ellipsis;
+
+/* Right zone: action buttons */
+.chord-bar-btns {
+  display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;
 }
-/* On narrow screens, sub wraps to new line */
-@media (max-width: 700px) {
-  .info-sub { margin-left: 0; width: 100%; }
+
+/* On very narrow screens, each zone stacks */
+@media (max-width: 680px) {
+  .chord-bar { flex-direction: column; align-items: stretch; }
+  .chord-bar-name { min-width: unset; }
+  .chord-bar-spacer { display: none; }
+  .chord-bar-btns { justify-content: flex-end; }
 }
 
 /* ── Root pills ──────────────────────────────────────────── */
@@ -279,8 +282,6 @@ input[type=range].vol-slider::-moz-range-thumb {
   .chord-instance { padding: 8px 10px 10px; }
   .btn { font-size: 1.0rem; padding: 5px 9px; }
   header h1 { font-size: 1.3rem; }
-  header p  { font-size: 0.9rem; }
-  .info-chord-name { font-size: 1.15rem; }
 }
 </style>
 </head>
@@ -288,7 +289,6 @@ input[type=range].vol-slider::-moz-range-thumb {
 
 <header>
   <h1>🎸 Fretboard · Inversion Tool</h1>
-  <p>Click frets to place your chord · inversions appear live</p>
 </header>
 
 <div class="global-controls">
@@ -301,7 +301,6 @@ input[type=range].vol-slider::-moz-range-thumb {
       <span class="vol-pct" id="globalVolPct">70%</span>
     </div>
   </div>
-  <span id="globalAudioHint"></span>
 </div>
 
 <div class="chord-instances" id="chordInstances"></div>
@@ -418,7 +417,7 @@ function ksPluck(midi,string,when=0){
   src.start(ctx.currentTime+when);
 }
 
-function playNoteKS(s,f,when=0){if(audioEnabled) ksPluck(OPEN_MIDI[s]+f,s,when);}
+function playNoteKS(s,f,when=0){ if(audioEnabled) ksPluck(OPEN_MIDI[s]+f,s,when); }
 
 const STRUM=0.032;
 function strumNotes(notes,btnEl){
@@ -427,25 +426,22 @@ function strumNotes(notes,btnEl){
   if(btnEl){
     const orig=btnEl.textContent;
     btnEl.classList.add('strumming'); btnEl.textContent='♪ Playing…';
-    setTimeout(()=>{btnEl.classList.remove('strumming');btnEl.textContent=orig;},notes.length*STRUM*1000+300);
+    setTimeout(()=>{ btnEl.classList.remove('strumming'); btnEl.textContent=orig; },notes.length*STRUM*1000+300);
   }
 }
 
-// ─── GLOBAL AUDIO CONTROLS ────────────────────────────────────────────────────
+// ─── GLOBAL AUDIO ─────────────────────────────────────────────────────────────
 function toggleGlobalAudio(){
   audioEnabled=!audioEnabled;
   const btn=document.getElementById('globalAudioBtn');
   const volW=document.getElementById('globalVolWrap');
-  const hint=document.getElementById('globalAudioHint');
   if(audioEnabled){
     btn.textContent='🔊 On'; btn.classList.add('audio-on');
     volW.style.opacity='1'; volW.style.pointerEvents='auto';
-    hint.textContent='Click any inversion dot to hear it';
     getAudioCtx();
   } else {
     btn.textContent='🔇 Off'; btn.classList.remove('audio-on');
     volW.style.opacity='0.35'; volW.style.pointerEvents='none';
-    hint.textContent='';
   }
   instances.forEach(inst=>inst.render());
 }
@@ -483,8 +479,6 @@ function detectChord(pcs,forcedRoot=null){
 }
 
 // ─── CHORD INSTANCE ────────────────────────────────────────────────────────────
-// instanceCounter = unique DOM-ID seed, never decrements.
-// Display numbers come from position in instances[], refreshed by renumberInstances().
 let instanceCounter=0;
 const instances=[];
 
@@ -502,76 +496,75 @@ class ChordInstance{
     const wrap=document.createElement('div');
     wrap.className='chord-instance'; wrap.id=`ci-${this.id}`;
 
-    // ── Row 1: header ──────────────────────────────────────
-    const hdr=document.createElement('div');
-    hdr.className='chord-instance-header';
+    /*
+     * Single chord bar — one flex row, 3 zones:
+     *   [name LEFT] [spacer] [root CENTER] [spacer] [buttons RIGHT]
+     *
+     * Hidden until ≥2 notes placed; empty-state shown instead.
+     */
+    const bar=document.createElement('div');
+    bar.className='chord-bar'; bar.id=`chordBar-${this.id}`;
 
-    const numSpan=document.createElement('span');
-    numSpan.className='chord-num'; numSpan.id=`chordNum-${this.id}`;
-    numSpan.textContent='Chord —';
-    hdr.appendChild(numSpan);
+    // LEFT: chord name
+    const nameEl=document.createElement('span');
+    nameEl.className='chord-bar-name'; nameEl.id=`sName-${this.id}`;
+    bar.appendChild(nameEl);
 
-    const acts=document.createElement('div');
-    acts.className='instance-actions'; acts.id=`acts-${this.id}`;
+    // SPACER
+    const sp1=document.createElement('div'); sp1.className='chord-bar-spacer';
+    bar.appendChild(sp1);
+
+    // CENTER: Root label + pills
+    const rootZone=document.createElement('div');
+    rootZone.className='chord-bar-root';
+
+    const rootLbl=document.createElement('span');
+    rootLbl.className='root-label'; rootLbl.textContent='Root';
+    rootZone.appendChild(rootLbl);
+
+    const pillsWrap=document.createElement('div');
+    pillsWrap.id=`rootPills-${this.id}`;
+    pillsWrap.style.cssText='display:contents;';
+    rootZone.appendChild(pillsWrap);
+
+    bar.appendChild(rootZone);
+
+    // SPACER
+    const sp2=document.createElement('div'); sp2.className='chord-bar-spacer';
+    bar.appendChild(sp2);
+
+    // RIGHT: action buttons
+    const btns=document.createElement('div');
+    btns.className='chord-bar-btns'; btns.id=`acts-${this.id}`;
 
     const lblBtn=document.createElement('button');
     lblBtn.className='btn'; lblBtn.id=`lblBtn-${this.id}`;
     lblBtn.textContent='♩ Intervals';
-    lblBtn.title='Toggle interval labels / note names';
     lblBtn.addEventListener('click',()=>this.toggleLabelMode(lblBtn));
-    acts.appendChild(lblBtn);
+    btns.appendChild(lblBtn);
 
     const playBtn=document.createElement('button');
     playBtn.className='btn accent-outline'; playBtn.id=`playBtn-${this.id}`;
     playBtn.textContent='▶ Play'; playBtn.disabled=!audioEnabled;
     playBtn.addEventListener('click',()=>this.playChord());
-    acts.appendChild(playBtn);
+    btns.appendChild(playBtn);
 
     const clearBtn=document.createElement('button');
     clearBtn.className='btn red'; clearBtn.textContent='✕ Clear';
     clearBtn.addEventListener('click',()=>this.clearAll());
-    acts.appendChild(clearBtn);
+    btns.appendChild(clearBtn);
 
-    // Remove button managed exclusively by updateRemoveButtons()
-    hdr.appendChild(acts);
-    wrap.appendChild(hdr);
+    // Remove button — managed by updateRemoveButtons()
+    bar.appendChild(btns);
+    wrap.appendChild(bar);
 
-    // ── Row 2: info-bar (chord name + root pills + sub-status) ──
-    // All on one row. Shown only when ≥2 notes placed.
-    const infoBar=document.createElement('div');
-    infoBar.className='info-bar'; infoBar.id=`infoBar-${this.id}`;
-
-    const nameEl=document.createElement('span');
-    nameEl.className='info-chord-name'; nameEl.id=`sName-${this.id}`;
-    infoBar.appendChild(nameEl);
-
-    const div=document.createElement('div'); div.className='info-divider';
-    infoBar.appendChild(div);
-
-    const rootLbl=document.createElement('span');
-    rootLbl.className='root-row-label'; rootLbl.textContent='Root';
-    infoBar.appendChild(rootLbl);
-
-    // Pills container — display:contents so pills flow inline
-    const pillsWrap=document.createElement('div');
-    pillsWrap.id=`rootPills-${this.id}`;
-    pillsWrap.style.cssText='display:contents;';
-    infoBar.appendChild(pillsWrap);
-
-    // Sub-status text pushed to the right
-    const subEl=document.createElement('span');
-    subEl.className='info-sub'; subEl.id=`sSub-${this.id}`;
-    infoBar.appendChild(subEl);
-
-    wrap.appendChild(infoBar);
-
-    // ── Empty / single-note state ──────────────────────────
+    // Empty / single-note state (shown when chord-bar is hidden)
     const emptyEl=document.createElement('div');
     emptyEl.className='status-empty'; emptyEl.id=`emptyState-${this.id}`;
     emptyEl.textContent='Click any fret to start placing notes';
     wrap.appendChild(emptyEl);
 
-    // ── Fretboard ──────────────────────────────────────────
+    // Fretboard
     const fbScroll=document.createElement('div');
     fbScroll.className='fb-scroll'; fbScroll.id=`fbScroll-${this.id}`;
     const fbWrap=document.createElement('div');
@@ -654,7 +647,7 @@ class ChordInstance{
 
   clearAll(){
     this.rootShape={}; this.displayDots={}; this.rootOverride=null;
-    this._hideInfoBar(); this.render();
+    this._hideBar(); this.render();
     this._showEmpty('Click any fret to start placing notes');
   }
 
@@ -663,25 +656,27 @@ class ChordInstance{
     if(el) el.remove();
     const idx=instances.indexOf(this);
     if(idx>=0) instances.splice(idx,1);
-    renumberInstances();
     updateRemoveButtons();
   }
 
   // ── State helpers ─────────────────────────────────────────
-  _showInfoBar(){
-    const bar=document.getElementById(`infoBar-${this.id}`);
+  _showBar(){
+    const bar=document.getElementById(`chordBar-${this.id}`);
     if(bar) bar.style.display='flex';
     const empty=document.getElementById(`emptyState-${this.id}`);
     if(empty) empty.style.display='none';
   }
-  _hideInfoBar(){
-    const bar=document.getElementById(`infoBar-${this.id}`);
+  _hideBar(){
+    const bar=document.getElementById(`chordBar-${this.id}`);
     if(bar) bar.style.display='none';
+    const empty=document.getElementById(`emptyState-${this.id}`);
+    if(empty) empty.style.display='block';
   }
   _showEmpty(msg){
     const empty=document.getElementById(`emptyState-${this.id}`);
     if(empty){ empty.textContent=msg; empty.style.display='block'; }
-    this._hideInfoBar();
+    const bar=document.getElementById(`chordBar-${this.id}`);
+    if(bar) bar.style.display='none';
   }
 
   // ── Root pills ────────────────────────────────────────────
@@ -693,7 +688,7 @@ class ChordInstance{
     const auto=document.createElement('span');
     auto.className='root-pill auto-pill'+(this.rootOverride===null?' selected':'');
     auto.textContent='Auto';
-    auto.addEventListener('click',()=>{this.rootOverride=null;this.computeAndDisplay();});
+    auto.addEventListener('click',()=>{ this.rootOverride=null; this.computeAndDisplay(); });
     wrap.appendChild(auto);
 
     const inSet=new Set(chordPCs);
@@ -702,7 +697,7 @@ class ChordInstance{
       pill.className='root-pill'+(inSet.has(pc)?' in-chord':'')+(this.rootOverride===pc?' selected':'');
       pill.textContent=NOTES[pc];
       const cap=pc;
-      pill.addEventListener('click',()=>{this.rootOverride=cap;this.computeAndDisplay();});
+      pill.addEventListener('click',()=>{ this.rootOverride=cap; this.computeAndDisplay(); });
       wrap.appendChild(pill);
     }
   }
@@ -711,7 +706,7 @@ class ChordInstance{
   playChord(){
     const keys=Object.keys(this.rootShape);
     if(!keys.length||!audioEnabled) return;
-    const notes=keys.map(k=>{const[s,f]=k.split('-').map(Number);return{s,f};}).sort((a,b)=>a.s-b.s);
+    const notes=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return{s,f}; }).sort((a,b)=>a.s-b.s);
     strumNotes(notes,document.getElementById(`playBtn-${this.id}`));
   }
 
@@ -719,7 +714,7 @@ class ChordInstance{
     if(!audioEnabled) return;
     const notes=[];
     for(const[key,val] of Object.entries(this.displayDots)){
-      if(val.group===groupId){const[s,f]=key.split('-').map(Number);notes.push({s,f});}
+      if(val.group===groupId){ const[s,f]=key.split('-').map(Number); notes.push({s,f}); }
     }
     strumNotes(notes.sort((a,b)=>a.s-b.s),null);
   }
@@ -736,7 +731,7 @@ class ChordInstance{
       return;
     }
 
-    // Render placed notes immediately as group-0 while computing
+    // Show placed notes immediately as group-0
     this.displayDots={};
     for(const k of keys){
       const[s,f]=k.split('-').map(Number);
@@ -750,7 +745,7 @@ class ChordInstance{
       return;
     }
 
-    const playedPCs=[...new Set(keys.map(k=>{const[s,f]=k.split('-').map(Number);return noteAt(s,f);}))];
+    const playedPCs=[...new Set(keys.map(k=>{ const[s,f]=k.split('-').map(Number); return noteAt(s,f); }))];
     const{root,name,labelFor}=detectChord(playedPCs,this.rootOverride);
     const usedStrings=[...new Set(keys.map(k=>+k.split('-')[0]))].sort((a,b)=>a-b);
 
@@ -780,7 +775,7 @@ class ChordInstance{
     }
     unique.sort((a,b)=>Math.min(...a.map(n=>n.f))-Math.min(...b.map(n=>n.f)));
 
-    const rootSig=keys.map(k=>{const[s,f]=k.split('-').map(Number);return`${s}:${f}`;}).sort().join('|');
+    const rootSig=keys.map(k=>{ const[s,f]=k.split('-').map(Number); return`${s}:${f}`; }).sort().join('|');
     let rootIdx=unique.findIndex(v=>v.map(n=>`${n.s}:${n.f}`).sort().join('|')===rootSig);
     if(rootIdx<0) rootIdx=0;
 
@@ -801,22 +796,11 @@ class ChordInstance{
 
     const rootName=NOTES[root], lock=this.rootOverride!==null;
 
-    // Update chord name
     const nameEl=document.getElementById(`sName-${this.id}`);
     if(nameEl) nameEl.textContent=`${rootName} ${name}${lock?' ✎':''}`;
 
-    // Rebuild root pills
     this._buildRootPills(playedPCs);
-
-    // Sub-status — inline at end of info-bar
-    const hintText=lock
-      ?`✎ locked to ${rootName} · click Auto to release`
-      :(audioEnabled?'click inversion dot to hear':'enable audio to play');
-    const subEl=document.getElementById(`sSub-${this.id}`);
-    if(subEl) subEl.textContent=
-      `${usedStrings.map(s=>SNAMES[s]).join('')} · ${unique.length} voicings · ${selV.length} shown · ${hintText}`;
-
-    this._showInfoBar();
+    this._showBar();
     this.render();
   }
 
@@ -824,7 +808,7 @@ class ChordInstance{
   render(){
     const fb=document.getElementById(`fb-${this.id}`); if(!fb) return;
     fb.querySelectorAll('.dot').forEach(d=>d.remove());
-    fb.querySelectorAll('.string-name').forEach(nm=>{nm.style.color='';nm.style.fontWeight='';});
+    fb.querySelectorAll('.string-name').forEach(nm=>{ nm.style.color=''; nm.style.fontWeight=''; });
     this.groupElements={};
 
     for(const[key,{group,label,noteName}]of Object.entries(this.displayDots)){
@@ -839,7 +823,7 @@ class ChordInstance{
           e.stopPropagation(); this.playInversion(group);
           (this.groupElements[group]||new Set()).forEach(el=>{
             el.style.transform='scale(1.2)';
-            setTimeout(()=>{el.style.transform='';},180);
+            setTimeout(()=>{ el.style.transform=''; },180);
           });
         });
         dot.addEventListener('mouseenter',()=>this.highlightGroup(group,true));
@@ -884,13 +868,6 @@ class ChordInstance{
 }
 
 // ─── INSTANCE MANAGEMENT ──────────────────────────────────────────────────────
-function renumberInstances(){
-  instances.forEach((inst,idx)=>{
-    const el=document.getElementById(`chordNum-${inst.id}`);
-    if(el) el.textContent=`Chord ${idx+1}`;
-  });
-}
-
 function updateRemoveButtons(){
   instances.forEach(inst=>{
     const acts=document.getElementById(`acts-${inst.id}`);
@@ -910,7 +887,6 @@ function addChordInstance(){
   const inst=new ChordInstance(instanceCounter);
   instances.push(inst);
   inst.buildDOM();
-  renumberInstances();
   updateRemoveButtons();
   inst.computeAndDisplay();
   inst.scaleFretboard();
